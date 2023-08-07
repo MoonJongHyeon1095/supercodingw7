@@ -1,1 +1,1 @@
-# supercodingw7
+# 슈퍼코딩 컨텐츠 1팀
