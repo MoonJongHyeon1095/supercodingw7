@@ -6,3 +6,11 @@ spring:
     url: ${DB_URL}
 logging:
   config: classpath:logback-spring.xml
+
+  level:
+    org:
+      hibernate:
+        SQL: DEBUG
+
+jwt:
+  secret-key-source: koey

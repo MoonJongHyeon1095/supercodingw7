@@ -1,5 +1,6 @@
 package com.github.crudprac.web.controller;
 
+import com.github.crudprac.service.UserAuthDetailsService;
 import com.github.crudprac.service.UserService;
 import com.github.crudprac.web.dto.LogoutRequest;
 import com.github.crudprac.web.dto.MessageResponse;
@@ -16,10 +17,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class UserController {
     private final UserService userService;
+    private final UserAuthDetailsService userAuthDetailsService;
 
     @PostMapping("/signup")
     public ResponseEntity<MessageResponse> signUp(@RequestBody SignRequest signRequest) {
         return userService.signUp(signRequest);
+        // return userAuthDetailsService.signUp(signRequest);
     }
 
     @PostMapping("/login")
