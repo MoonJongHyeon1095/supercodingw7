@@ -1,4 +1,4 @@
-package com.github.crudprac.web.dto;
+package com.github.crudprac.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

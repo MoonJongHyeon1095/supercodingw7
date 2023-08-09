@@ -1,16 +1,18 @@
-package com.github.crudprac.web.controller;
+package com.github.crudprac.controller;
 
 import com.github.crudprac.service.UserAuthDetailsService;
 import com.github.crudprac.service.UserService;
-import com.github.crudprac.web.dto.LogoutRequest;
-import com.github.crudprac.web.dto.MessageResponse;
-import com.github.crudprac.web.dto.SignRequest;
+import com.github.crudprac.dto.LogoutRequest;
+import com.github.crudprac.dto.MessageResponse;
+import com.github.crudprac.dto.SignRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import javax.servlet.http.HttpServletResponse;
 
 @RestController
 @RequestMapping("/api")
@@ -26,8 +28,8 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<MessageResponse> login(@RequestBody SignRequest signRequest) {
-        return userService.login(signRequest);
+    public ResponseEntity<MessageResponse> login(@RequestBody SignRequest signRequest, HttpServletResponse response) {
+        return userService.login(signRequest, response);
     }
 
     @PostMapping("/logout")

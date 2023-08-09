@@ -1,4 +1,4 @@
-package com.github.crudprac.service.exceptions;
+package com.github.crudprac.exceptions;
 
 public class NotFoundException extends RuntimeException{
     public NotFoundException(String message) {

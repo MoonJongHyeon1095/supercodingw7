@@ -13,4 +13,4 @@ logging:
         SQL: DEBUG
 
 jwt:
-  secret-key-source: koey
+  secret-key-source: ${SECRET_KEY_SOURCE}
