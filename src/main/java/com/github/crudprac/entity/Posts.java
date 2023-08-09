@@ -14,6 +14,7 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 @Getter
+@Table(name = "posts")
 @Entity
 public class Posts extends Time {
 

@@ -43,9 +43,9 @@ public class CommentService {
     /* READ */
     @Transactional(readOnly = true)
     public List<CommentResponseDto> findAll() {
-        Integer id = null;
-        Posts posts = postsRepository.findById(id).orElseThrow(() ->
-                new IllegalArgumentException("해당 게시글이 존재하지 않습니다. id: " + id));
+
+        Posts posts = postsRepository.findById().orElseThrow(() ->
+                new IllegalArgumentException("해당 게시글이 존재하지 않습니다. id: "));
         List<Comments> comments = posts.getComments();
         return comments.stream().map(CommentResponseDto::new).collect(Collectors.toList());
     }
@@ -54,9 +54,9 @@ public class CommentService {
     /* UPDATE */
     @Transactional
     public void update(Integer postsId, CommentRequestDto dto) {
-        Integer id = null;
-        Comments comment = commentRepository.findByPostsIdAndId(postsId, id).orElseThrow(() ->
-                new IllegalArgumentException("해당 댓글이 존재하지 않습니다. " + id));
+
+        Comments comment = commentRepository.findByPostsIdAndId(postsId, postsId).orElseThrow(() ->
+                new IllegalArgumentException("해당 댓글이 존재하지 않습니다. " + postsId));
 
         comment.update(dto.getComment());
     }
@@ -64,9 +64,9 @@ public class CommentService {
     /* DELETE */
     @Transactional
     public void delete(Integer postsId) {
-        Integer id = null;
-        Comments comment = commentRepository.findByPostsIdAndId(postsId, id).orElseThrow(() ->
-                new IllegalArgumentException("해당 댓글이 존재하지 않습니다. id=" + id));
+
+        Comments comment = commentRepository.findByPostsIdAndId(postsId, postsId).orElseThrow(() ->
+                new IllegalArgumentException("해당 댓글이 존재하지 않습니다. id=" + postsId));
 
         commentRepository.delete(comment);
     }
