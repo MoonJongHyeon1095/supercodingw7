@@ -43,6 +43,7 @@ public class CommentService {
     /* READ */
     @Transactional(readOnly = true)
     public List<CommentResponseDto> findAll() {
+        Integer id = null;
         Posts posts = postsRepository.findById(id).orElseThrow(() ->
                 new IllegalArgumentException("해당 게시글이 존재하지 않습니다. id: " + id));
         List<Comments> comments = posts.getComments();
@@ -53,6 +54,7 @@ public class CommentService {
     /* UPDATE */
     @Transactional
     public void update(Integer postsId, CommentRequestDto dto) {
+        Integer id = null;
         Comments comment = commentRepository.findByPostsIdAndId(postsId, id).orElseThrow(() ->
                 new IllegalArgumentException("해당 댓글이 존재하지 않습니다. " + id));
 
@@ -62,6 +64,7 @@ public class CommentService {
     /* DELETE */
     @Transactional
     public void delete(Integer postsId) {
+        Integer id = null;
         Comments comment = commentRepository.findByPostsIdAndId(postsId, id).orElseThrow(() ->
                 new IllegalArgumentException("해당 댓글이 존재하지 않습니다. id=" + id));
 
