@@ -1,16 +1,14 @@
 package com.github.crudprac.controller;
 
-import com.github.crudprac.config.LoginUser;
 import com.github.crudprac.dto.comment.CommentRequestDto;
 import com.github.crudprac.dto.comment.CommentResponseDto;
-import com.github.crudprac.dto.CommentDto;
-import com.github.crudprac.dto.user.UserDto;
 import com.github.crudprac.service.CommentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Objects;
 
 @RequiredArgsConstructor
 @RequestMapping("/api")
@@ -20,29 +18,28 @@ public class CommentApiController {
     private final CommentService commentService;
 
     /* CREATE */
-    @PostMapping("/posts/{id}/comments")
-    public ResponseEntity<Long> save(@PathVariable Long id, @RequestBody CommentRequestDto dto,
-                                     @LoginUser UserDto.Response userSessionDto) {
-        return ResponseEntity.ok(commentService.commentSave(userSessionDto.getNickname(), id, dto));
+    @PostMapping("/comments")
+    public CommentResponseDto save(@RequestBody CommentRequestDto commentRequestDto) {
+        return commentService.save(commentRequestDto);
     }
 
     /* READ */
-    @GetMapping("/posts/{id}/comments")
-    public List<CommentResponseDto> read(@PathVariable Long id) {
-        return commentService.findAll(id);
+    @GetMapping("/comments")
+    public List<CommentResponseDto> read() {
+        return commentService.findAll();
     }
 
     /* UPDATE */
-    @PutMapping({"/posts/{postsId}/comments/{id}"})
-    public ResponseEntity<Long> update(@PathVariable Long postsId, @PathVariable Long id, @RequestBody CommentRequestDto dto) {
-        commentService.update(postsId, id, dto);
-        return ResponseEntity.ok(id);
+    @PutMapping({"/comments/{comment_id}"})
+    public ResponseEntity<Objects> update(@PathVariable Integer id, @RequestBody CommentRequestDto commentRequestDto) {
+        commentService.update(id, commentRequestDto);
+        return (ResponseEntity<Objects>) ResponseEntity.ok();
     }
 
     /* DELETE */
-    @DeleteMapping("/posts/{postsId}/comments/{id}")
-    public ResponseEntity<Long> delete(@PathVariable Long postsId, @PathVariable Long id) {
-        commentService.delete(postsId, id);
-        return ResponseEntity.ok(id);
+    @DeleteMapping("/comments/{comment_id}")
+    public ResponseEntity<Objects> delete(@PathVariable Integer id) {
+        commentService.delete(id);
+        return (ResponseEntity<Objects>) ResponseEntity.ok();
     }
 }

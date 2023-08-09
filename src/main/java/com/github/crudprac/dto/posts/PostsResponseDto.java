@@ -16,12 +16,12 @@ import java.util.stream.Collectors;
 @Getter
 public class PostsResponseDto {
 
-    private Long id;
+    private Integer id;
     private String title;
-    private String writer;
+//    private String writer;
     private String content;
     private String createdDate, modifiedDate;
-    private int view;
+//    private int view;
     private Long userId;
     // comments 필드의 List 타입을 DTO 클래스로해서 엔티티간 무한 참조를 방지
     private List<CommentResponseDto> comments;
@@ -30,12 +30,12 @@ public class PostsResponseDto {
     public PostsResponseDto(Posts posts) {
         this.id = posts.getId();
         this.title = posts.getTitle();
-        this.writer = posts.getWriter();
+//        this.writer = posts.getWriter();
         this.content = posts.getContent();
         this.createdDate = posts.getCreatedDate();
         this.modifiedDate = posts.getModifiedDate();
-        this.view = posts.getView();
-        this.userId = posts.getUser().getId();
+//        this.view = posts.getView();
+        this.userId = Long.valueOf(posts.getUser().getId());
         this.comments = posts.getComments().stream().map(CommentResponseDto::new).collect(Collectors.toList());
     }
 }
