@@ -7,7 +7,7 @@ import org.springframework.boot.autoconfigure.domain.EntityScan;
 
 @SpringBootApplication
 //@SpringBootApplication(exclude = SecurityAutoConfiguration.class)// Spring Security 인증 기능 제외
-@EntityScan("com.github.crudprac.entity")
+//@EntityScan("com.github.crudprac.entity")
 public class CrudpracApplication {
 
     public static void main(String[] args) {

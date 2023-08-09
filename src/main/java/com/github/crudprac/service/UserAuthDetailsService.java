@@ -5,10 +5,12 @@ import com.github.crudprac.repository.details.UserAuthDetails;
 import com.github.crudprac.repository.entity.UserEntity;
 import com.github.crudprac.exceptions.NotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Primary;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+@Primary
 @Service
 @RequiredArgsConstructor
 public class UserAuthDetailsService implements UserDetailsService {

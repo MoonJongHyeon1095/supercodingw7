@@ -59,7 +59,9 @@ public class UserService {
         if (!passwordEncoder.matches(password, encodedPassword)) return ResponseEntity.status(401).body(new MessageResponse("password가 옳지 않습니다."));
 
         log.info("hello");
-        Authentication authentication = new UsernamePasswordAuthenticationToken(email, encodedPassword, null);
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(email, encodedPassword, null)
+        );
         log.info("world");
         SecurityContextHolder.getContext().setAuthentication(authentication);
         String jwtToken = jwtProvider.createToken(email, null);

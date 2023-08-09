@@ -2,8 +2,6 @@ package com.github.crudprac.controller;
 
 import com.github.crudprac.dto.PostRequestDto;
 import com.github.crudprac.dto.PostResponseDto;
-import com.github.crudprac.dto.ResponseMessageDto;
-import com.github.crudprac.entity.Post;
 import com.github.crudprac.service.PostService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;

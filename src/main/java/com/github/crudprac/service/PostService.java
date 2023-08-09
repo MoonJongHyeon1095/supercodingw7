@@ -2,31 +2,37 @@ package com.github.crudprac.service;
 
 import com.github.crudprac.dto.PostRequestDto;
 import com.github.crudprac.dto.PostResponseDto;
-import com.github.crudprac.entity.Post;
-import com.github.crudprac.entity.User;
-import com.github.crudprac.repository.users.PostRepository;
-import com.github.crudprac.repository.users.UserRepository;
+import com.github.crudprac.repository.UserJpaRepository;
+import com.github.crudprac.repository.entity.PostEntity;
+import com.github.crudprac.repository.PostRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.NotAcceptableStatusException;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
+@Slf4j
 public class PostService {
     private final PostRepository postRepository;
-    public PostService(PostRepository postRepository, UserRepository userRepository) {
+    private final UserJpaRepository userJpaRepository;
+    public PostService(PostRepository postRepository, UserJpaRepository userJpaRepository) {
         this.postRepository = postRepository;
+        this.userJpaRepository = userJpaRepository;
     }
 
     public PostResponseDto createPost(PostRequestDto postRequestDto){
         String title = postRequestDto.getTitle();
         String content = postRequestDto.getContent();
         String username = "test"; //로그인 후 유저네임 가져올 것
-
-        Post post = new Post(title, content, username);
-        postRepository.save(post);
-        return new PostResponseDto(post);
+        PostEntity postEntity = new PostEntity(title, content, username);
+        try{
+            postRepository.save(postEntity);
+            return new PostResponseDto(postEntity);
+        } catch (RuntimeException exception){
+            throw new NotAcceptableStatusException("save 에러");
+        }
     }
 
     public List<PostResponseDto> findAll() {

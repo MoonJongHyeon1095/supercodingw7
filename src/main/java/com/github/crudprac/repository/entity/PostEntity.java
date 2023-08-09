@@ -1,8 +1,7 @@
-package com.github.crudprac.entity;
+package com.github.crudprac.repository.entity;
 
 import javax.persistence.*;
 
-import com.github.crudprac.dto.PostRequestDto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,10 +13,10 @@ import lombok.Setter;
 //@Table(name = "posts") // 매핑할 테이블의 이름을 지정
 @NoArgsConstructor
 @AllArgsConstructor
-public class Post {
+public class PostEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long post_id;
+    private Integer post_id;
     @Column(name = "title", nullable = false, length = 20)
     private String title;
     @Column(name = "content", nullable = false, length = 100)
@@ -27,7 +26,7 @@ public class Post {
 
 
 
-    public Post(String title, String content, String username) {
+    public PostEntity(String title, String content, String username) {
         this.title = title;
         this.content = content;
         this.username = username;
