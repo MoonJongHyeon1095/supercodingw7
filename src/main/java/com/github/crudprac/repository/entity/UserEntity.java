@@ -26,4 +26,8 @@ public class UserEntity {
 
     @Column(name="username", length = 20)
     private String name;
+
+    @Column(name="authority")
+    @Enumerated(value=EnumType.STRING)
+    private UserRole authority;
 }

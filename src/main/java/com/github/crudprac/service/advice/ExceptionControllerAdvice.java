@@ -28,4 +28,6 @@ public class ExceptionControllerAdvice {
         log.warn("Not found exception: {}", exceptionMessage);
         return new MessageResponse(exceptionMessage);
     }
+
+
 }
