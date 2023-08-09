@@ -42,9 +42,9 @@ public class CommentService {
 
     /* READ */
     @Transactional(readOnly = true)
-    public List<CommentResponseDto> findAll() {
+    public List<CommentResponseDto> findAll(CommentRequestDto commentRequestDto) {
 
-        Posts posts = postsRepository.findById().orElseThrow(() ->
+        Posts posts = postsRepository.findById(commentRequestDto.getId()).orElseThrow(() ->
                 new IllegalArgumentException("해당 게시글이 존재하지 않습니다. id: "));
         List<Comments> comments = posts.getComments();
         return comments.stream().map(CommentResponseDto::new).collect(Collectors.toList());

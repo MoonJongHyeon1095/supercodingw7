@@ -30,8 +30,8 @@ public class User extends Time {
     @Column(columnDefinition = "NVARCHAR(20)",nullable = false)
     private String email;
 
-//    @Column(nullable = false, unique = true)
-//    private String nickname;
+    @Column(nullable = false, unique = true)
+    private String nickname;
 
 //    @Enumerated(EnumType.STRING)
 //    @Column(nullable = false)

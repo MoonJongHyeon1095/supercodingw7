@@ -40,8 +40,8 @@ public class Posts extends Time {
 //    @Column(nullable = false)
 //    private String writer;
 
-//    @Column(columnDefinition = "integer default 0", nullable = false)
-//    private int view;
+    @Column(columnDefinition = "integer default 0", nullable = false)
+    private int view;
 
     // 게시글 UI에서 댓글을 바로 보여주기 위해 FetchType을 EAGER로 설정, 펼쳐보기 같은 UI라면 Lazy
     // 게시글이 삭제되면 댓글 또한 삭제되어야 하기 때문에 CascadeType.REMOVE 속성

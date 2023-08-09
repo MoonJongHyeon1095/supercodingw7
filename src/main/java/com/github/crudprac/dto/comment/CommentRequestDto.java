@@ -3,10 +3,14 @@ package com.github.crudprac.dto.comment;
 import com.github.crudprac.entity.Comments;
 import com.github.crudprac.entity.Posts;
 import com.github.crudprac.entity.User;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
+@Getter
+@Setter
 public class CommentRequestDto {
     private Integer id;
     private String comment;

@@ -1,6 +1,6 @@
 package com.github.crudprac.dto.user;
 
-import com.github.crudprac.entity.Role;
+//import com.github.crudprac.entity.Role;
 import com.github.crudprac.entity.User;
 import lombok.*;
 
@@ -37,7 +37,7 @@ public class UserDto {
         @NotBlank(message = "이메일은 필수 입력 값입니다.")
         private String email;
 
-        private Role role;
+//        private Role role;
 
         /* DTO -> Entity */
         public User toEntity() {

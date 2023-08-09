@@ -25,8 +25,8 @@ public class CommentApiController {
 
     /* READ */
     @GetMapping("/comments")
-    public List<CommentResponseDto> read() {
-        return commentService.findAll();
+    public List<CommentResponseDto> read(@RequestBody CommentRequestDto commentRequestDto) {
+        return commentService.findAll(commentRequestDto);
     }
 
     /* UPDATE */
