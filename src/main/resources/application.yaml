@@ -1,0 +1,16 @@
+spring:
+  datasource:
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: ${DB_URL}
+logging:
+  config: classpath:logback-spring.xml
+
+  level:
+    org:
+      hibernate:
+        SQL: DEBUG
+
+jwt:
+  secret-key-source: ${SECRET_KEY_SOURCE}
