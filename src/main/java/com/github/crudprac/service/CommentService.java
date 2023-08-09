@@ -42,7 +42,7 @@ public class CommentService {
 
     /* READ */
     @Transactional(readOnly = true)
-    public List<CommentResponseDto> findAll(Integer id) {
+    public List<CommentResponseDto> findAll() {
         Posts posts = postsRepository.findById(id).orElseThrow(() ->
                 new IllegalArgumentException("해당 게시글이 존재하지 않습니다. id: " + id));
         List<Comments> comments = posts.getComments();
