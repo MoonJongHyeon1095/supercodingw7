@@ -5,12 +5,11 @@ import com.github.crudprac.repository.details.UserAuthDetails;
 import com.github.crudprac.repository.entity.UserEntity;
 import com.github.crudprac.exceptions.NotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.annotation.Primary;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import java.util.List;
 
-@Primary
 @Service
 @RequiredArgsConstructor
 public class UserAuthDetailsService implements UserDetailsService {
@@ -25,7 +24,7 @@ public class UserAuthDetailsService implements UserDetailsService {
                 .userId(userEntity.getId())
                 .email(userEntity.getEmail())
                 .password(userEntity.getPassword())
-                .roles(null)
+                .authorities(List.of(userEntity.getAuthority().name()))
                 .build();
     }
 }

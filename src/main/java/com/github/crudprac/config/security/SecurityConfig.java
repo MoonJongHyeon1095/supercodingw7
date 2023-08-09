@@ -20,8 +20,8 @@ public class SecurityConfig{
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
-        httpSecurity.headers().frameOptions().sameOrigin()
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        return http.headers().frameOptions().sameOrigin()
                 .and()
                 .formLogin().disable()
                 .csrf().disable()
@@ -31,11 +31,10 @@ public class SecurityConfig{
                 .and()
                 .authorizeRequests()
                     .antMatchers("/resources/static/**", "/api/signup", "/api/login").permitAll()
+                .anyRequest().authenticated()
                 .and()
-                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
-
-
-        return httpSecurity.build();
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+                .build();
     }
 
     @Bean
