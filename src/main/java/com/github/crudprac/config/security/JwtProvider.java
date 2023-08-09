@@ -15,6 +15,7 @@ import javax.crypto.SecretKey;
 import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Component
@@ -27,12 +28,12 @@ public class JwtProvider {
     private final String headerName = "Access-Token";
     private final UserAuthDetailsService userAuthDetailsService;
 
-    public String createToken(String email, List<String> roles) {
-        Claims claims = Jwts.claims().setSubject(email);
-        claims.put("roles", roles);
+    public String createToken(String email, List<String> authorities) {
         Date now = new Date();
         return Jwts.builder()
-                .setClaims(claims)
+                .setSubject(email)
+                .claim("email", email)
+                .claim("authorities", authorities)
                 .setIssuedAt(now)
                 .setExpiration(new Date(now.getTime() + tokenValidMilliseconds))
                 .signWith(secretKey)
@@ -59,9 +60,15 @@ public class JwtProvider {
 
         UserAuthDetails userAuthDetails = userAuthDetailsService.loadUserByUsername(email);
         String encodedPassword = userAuthDetails.getPassword();
-        List<SimpleGrantedAuthority> authorities = userAuthDetails.getAuthorities();
-        log.info("filter password: {}", encodedPassword);
-        return new UsernamePasswordAuthenticationToken(email, encodedPassword, authorities);
+        List<String> authorities = getAuthorities(jwt).orElseThrow(NullPointerException::new);
+        List<SimpleGrantedAuthority> GrantedAuthorities = authorities.stream().map(SimpleGrantedAuthority::new).collect(Collectors.toList());
+        return new UsernamePasswordAuthenticationToken(email, encodedPassword, GrantedAuthorities);
+    }
+
+    private Optional<List<String>> getAuthorities(String jwt) {
+        List<?> authorities = Jwts.parserBuilder().setSigningKey(secretKey).build().parseClaimsJws(jwt).getBody().get("authorities", List.class);
+        if (authorities == null) return Optional.empty();
+        return Optional.of(authorities.stream().map(String::valueOf).collect(Collectors.toList()));
     }
 
     private String getEmail(String jwt) {

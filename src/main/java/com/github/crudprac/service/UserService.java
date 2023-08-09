@@ -8,21 +8,17 @@ import com.github.crudprac.exceptions.NotFoundException;
 import com.github.crudprac.dto.LogoutRequest;
 import com.github.crudprac.dto.MessageResponse;
 import com.github.crudprac.dto.SignRequest;
+import com.github.crudprac.repository.entity.UserRole;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletResponse;
-impprt java.util.List;
+import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -51,6 +47,7 @@ public class UserService {
                         .email(email)
                         .password(encodedPassword)
                         .name(name)
+                        .authority(UserRole.USER)
                         .build());
 
         return ResponseEntity.ok(new MessageResponse("회원가입이 완료되었습니다."));
@@ -67,26 +64,27 @@ public class UserService {
         String encodedPassword = userEntity.getPassword();
         if (!passwordEncoder.matches(password, encodedPassword)) return ResponseEntity.status(401).body(new MessageResponse("password가 옳지 않습니다."));
 
-        List<SimpleGrantedAuthority> authorities = getAuthorities(userEntity);
-        log.info("hello");
-        try {
-            Authentication newAuth = new UsernamePasswordAuthenticationToken(email, encodedPassword, authorities);
-            Authentication authentication = authenticationManager.authenticate(newAuth);
-            log.info("world");
-            SecurityContextHolder.getContext().setAuthentication(authentication);
-            log.info("hello world");
-        } catch (AuthenticationException e) {
-            log.warn("인증에 실패했습니다.");
-        }
+        List<String> authorities = getAuthorities(userEntity);
+//        List<SimpleGrantedAuthority> GrantedAuthorities = authorities.stream().map(SimpleGrantedAuthority::new).collect(Collectors.toList());
+//        log.info("hello");
+//        try {
+//            Authentication newAuth = new UsernamePasswordAuthenticationToken(email, encodedPassword, GrantedAuthorities);
+//            Authentication authentication = authenticationManager.authenticate(newAuth);
+//            log.info("world");
+//            SecurityContextHolder.getContext().setAuthentication(authentication);
+//            log.info("hello world");
+//        } catch (AuthenticationException e) {
+//            log.warn("인증에 실패했습니다.");
+//        }
 
-        String jwtToken = jwtProvider.createToken(email, null);
+        String jwtToken = jwtProvider.createToken(email, authorities);
         response.setHeader(jwtProvider.getHeaderName(), jwtToken);
 
         return ResponseEntity.ok(new MessageResponse("로그인이 성공적으로 완료되었습니다."));
     }
 
-    private List<SimpleGrantedAuthority> getAuthorities(UserEntity userEntity) {
-        return Stream.of(userEntity.getAuthority().name()).map(SimpleGrantedAuthority::new).collect(Collectors.toList());
+    private List<String> getAuthorities(UserEntity userEntity) {
+        return List.of(userEntity.getAuthority().name());
     }
 
     public ResponseEntity<MessageResponse> logout(LogoutRequest logoutRequest) {
