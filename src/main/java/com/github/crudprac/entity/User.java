@@ -34,8 +34,4 @@ public class User {
         this.username = username;
     }
 
-//    @Column(nullable = false)
-//    @Enumerated(value = EnumType.STRING)
-//    private UserRoleEnum role;
-
 }
