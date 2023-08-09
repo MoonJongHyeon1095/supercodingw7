@@ -17,10 +17,9 @@ public class CommentApiController {
 
     private final CommentService commentService;
 
-
     /* CREATE */
     @PostMapping("/comments")
-    public String save(@RequestBody CommentRequestDto commentRequestDto) {
+    public CommentResponseDto save(@RequestBody CommentRequestDto commentRequestDto) {
         return commentService.save(commentRequestDto);
     }
 
