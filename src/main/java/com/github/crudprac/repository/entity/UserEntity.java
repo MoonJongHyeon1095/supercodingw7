@@ -24,7 +24,7 @@ public class UserEntity {
     @Column(name="password", length = 100, nullable = false)
     private String password;
 
-    @Column(name="username", length = 20)
+    @Column(name="username", length = 20, nullable = false)
     private String name;
 
     @Column(name="authority")
