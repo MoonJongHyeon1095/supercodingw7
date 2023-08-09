@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 @Builder
 public class UserAuthDetails implements UserDetails {
 
-    private int userId;
+    private Integer userId;
     private String email;
     private String password;
     private List<String> authorities;
@@ -31,12 +31,12 @@ public class UserAuthDetails implements UserDetails {
 
     @Override
     public String getPassword() {
-        return password;
+        return this.password;
     }
 
     @Override
     public String getUsername() {
-        return email;
+        return this.email;
     }
 
     @Override
