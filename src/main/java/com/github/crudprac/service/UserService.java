@@ -42,7 +42,7 @@ public class UserService {
         if (email == null || password == null) throw new BadRequestException("email 혹은 password가 누락되었습니다.");
 
         // 이미 존재하는 email이면 409 Conflict
-        if (userJpaRepository.existsByEmail(email)) return ResponseEntity.status(409).body(new MessageResponse("이미 가입된 이메일입니다."));
+        if (userJpaRepository.existsByEmail(email)) return ResponseEntity.status(409).body(new MessageResponse("이미 가입된 email입니다."));
 
         String encodedPassword = encode(password);
 
@@ -59,7 +59,6 @@ public class UserService {
     }
 
     public ResponseEntity<MessageResponse> login(SignRequest signRequest, HttpServletResponse response) {
-        log.info("login()");
         String email = signRequest.getEmail();
         String password = signRequest.getPassword();
         if (email == null || password == null) throw new BadRequestException("email 혹은 password가 누락되었습니다.");
@@ -70,14 +69,6 @@ public class UserService {
         if (!passwordEncoder.matches(password, encodedPassword)) return ResponseEntity.status(401).body(new MessageResponse("password가 옳지 않습니다."));
 
         List<String> authorities = getAuthorities(user);
-//        List<SimpleGrantedAuthority> GrantedAuthorities = authorities.stream().map(SimpleGrantedAuthority::new).collect(Collectors.toList());
-//        try {
-//            Authentication newAuth = new UsernamePasswordAuthenticationToken(email, encodedPassword, GrantedAuthorities);
-//            Authentication authentication = authenticationManager.authenticate(newAuth);
-//            SecurityContextHolder.getContext().setAuthentication(authentication);
-//        } catch (AuthenticationException e) {
-//            log.warn("인증에 실패했습니다.");
-//        }
 
         SignEntity sign = SignEntity.builder()
                 .email(email)
@@ -95,10 +86,10 @@ public class UserService {
     @Transactional(transactionManager = "tmJpa")
     public ResponseEntity<MessageResponse> logout(LogoutRequest logoutRequest) {
         String email = logoutRequest.getEmail();
-        signJpaRepository.findByEmail(email).orElseThrow(()->new NotFoundException("로그인된 적 없는 email입니다."));
+
+        if (!signJpaRepository.existsByEmail(email)) return ResponseEntity.badRequest().body(new MessageResponse("로그인된 적 없는 email입니다."));
 
         signJpaRepository.deleteByEmail(email);
-
         return ResponseEntity.ok(new MessageResponse("로그아웃되었습니다."));
     }
 
