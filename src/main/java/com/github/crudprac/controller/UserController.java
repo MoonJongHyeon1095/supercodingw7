@@ -1,6 +1,5 @@
 package com.github.crudprac.controller;
 
-import com.github.crudprac.service.UserAuthDetailsService;
 import com.github.crudprac.service.UserService;
 import com.github.crudprac.dto.LogoutRequest;
 import com.github.crudprac.dto.MessageResponse;
@@ -19,12 +18,10 @@ import javax.servlet.http.HttpServletResponse;
 @RequiredArgsConstructor
 public class UserController {
     private final UserService userService;
-    private final UserAuthDetailsService userAuthDetailsService;
 
     @PostMapping("/signup")
     public ResponseEntity<MessageResponse> signUp(@RequestBody SignRequest signRequest) {
         return userService.signUp(signRequest);
-        // return userAuthDetailsService.signUp(signRequest);
     }
 
     @PostMapping("/login")

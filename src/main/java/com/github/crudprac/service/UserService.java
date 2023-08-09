@@ -1,7 +1,9 @@
 package com.github.crudprac.service;
 
 import com.github.crudprac.config.security.JwtProvider;
+import com.github.crudprac.repository.SignJpaRepository;
 import com.github.crudprac.repository.UserJpaRepository;
+import com.github.crudprac.repository.entity.SignEntity;
 import com.github.crudprac.repository.entity.UserEntity;
 import com.github.crudprac.exceptions.BadRequestException;
 import com.github.crudprac.exceptions.NotFoundException;
@@ -27,8 +29,8 @@ import java.util.stream.Stream;
 @Slf4j
 public class UserService {
     private final UserJpaRepository userJpaRepository;
+    private final SignJpaRepository signJpaRepository;
     private final PasswordEncoder passwordEncoder;
-    private final AuthenticationManager authenticationManager;
     private final JwtProvider jwtProvider;
 
     @Transactional(transactionManager = "tmJpa")
@@ -43,12 +45,15 @@ public class UserService {
         if (userJpaRepository.existsByEmail(email)) return ResponseEntity.status(409).body(new MessageResponse("이미 가입된 이메일입니다."));
 
         String encodedPassword = encode(password);
-        userJpaRepository.save(UserEntity.builder()
-                        .email(email)
-                        .password(encodedPassword)
-                        .name(name)
-                        .authority(UserRole.USER)
-                        .build());
+
+        UserEntity user = UserEntity.builder()
+                .email(email)
+                .password(encodedPassword)
+                .name(name)
+                .authority(UserRole.USER)
+                .build();
+
+        userJpaRepository.save(user);
 
         return ResponseEntity.ok(new MessageResponse("회원가입이 완료되었습니다."));
     }
@@ -59,23 +64,27 @@ public class UserService {
         String password = signRequest.getPassword();
         if (email == null || password == null) throw new BadRequestException("email 혹은 password가 누락되었습니다.");
 
-        UserEntity userEntity = userJpaRepository.findByEmail(email).orElseThrow(()->new NotFoundException("존재하지 않는 email입니다."));
+        UserEntity user = userJpaRepository.findByEmail(email).orElseThrow(()->new NotFoundException("존재하지 않는 email입니다."));
 
-        String encodedPassword = userEntity.getPassword();
+        String encodedPassword = user.getPassword();
         if (!passwordEncoder.matches(password, encodedPassword)) return ResponseEntity.status(401).body(new MessageResponse("password가 옳지 않습니다."));
 
-        List<String> authorities = getAuthorities(userEntity);
+        List<String> authorities = getAuthorities(user);
 //        List<SimpleGrantedAuthority> GrantedAuthorities = authorities.stream().map(SimpleGrantedAuthority::new).collect(Collectors.toList());
-//        log.info("hello");
 //        try {
 //            Authentication newAuth = new UsernamePasswordAuthenticationToken(email, encodedPassword, GrantedAuthorities);
 //            Authentication authentication = authenticationManager.authenticate(newAuth);
-//            log.info("world");
 //            SecurityContextHolder.getContext().setAuthentication(authentication);
-//            log.info("hello world");
 //        } catch (AuthenticationException e) {
 //            log.warn("인증에 실패했습니다.");
 //        }
+
+        SignEntity sign = SignEntity.builder()
+                .email(email)
+                .password(encodedPassword)
+                .user(user)
+                .build();
+        signJpaRepository.save(sign);
 
         String jwtToken = jwtProvider.createToken(email, authorities);
         response.setHeader(jwtProvider.getHeaderName(), jwtToken);
@@ -83,14 +92,18 @@ public class UserService {
         return ResponseEntity.ok(new MessageResponse("로그인이 성공적으로 완료되었습니다."));
     }
 
-    private List<String> getAuthorities(UserEntity userEntity) {
-        return List.of(userEntity.getAuthority().name());
-    }
-
+    @Transactional(transactionManager = "tmJpa")
     public ResponseEntity<MessageResponse> logout(LogoutRequest logoutRequest) {
+        String email = logoutRequest.getEmail();
+        signJpaRepository.findByEmail(email).orElseThrow(()->new NotFoundException("로그인된 적 없는 email입니다."));
 
+        signJpaRepository.deleteByEmail(email);
 
         return ResponseEntity.ok(new MessageResponse("로그아웃되었습니다."));
+    }
+
+    private List<String> getAuthorities(UserEntity userEntity) {
+        return List.of(userEntity.getAuthority().name());
     }
 
     private String encode(String password) {

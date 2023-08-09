@@ -1,42 +1,40 @@
 package com.github.crudprac.repository.details;
 
+import com.github.crudprac.repository.entity.UserEntity;
 import lombok.*;
+import org.springframework.context.annotation.Primary;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
 
+@Builder
 @Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-@Builder
-public class UserAuthDetails implements UserDetails {
-
-    private Integer userId;
+@Primary
+public class SignDetails implements UserDetails {
+    private Integer signId;
     private String email;
     private String password;
-    private List<String> authorities;
+    private UserEntity user;
 
     @Override
-    public List<SimpleGrantedAuthority> getAuthorities() {
-        if (authorities == null) return null;
-
-        return authorities.stream().map(SimpleGrantedAuthority::new).collect(Collectors.toList());
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return List.of(new SimpleGrantedAuthority(user.getAuthority().name()));
     }
 
     @Override
     public String getPassword() {
-        return this.password;
+        return password;
     }
 
     @Override
     public String getUsername() {
-        return this.email;
+        return email;
     }
 
     @Override

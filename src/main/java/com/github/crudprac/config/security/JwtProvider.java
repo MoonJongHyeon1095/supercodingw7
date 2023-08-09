@@ -1,8 +1,7 @@
 package com.github.crudprac.config.security;
 
-import com.github.crudprac.repository.details.UserAuthDetails;
-import com.github.crudprac.service.UserAuthDetailsService;
-import io.jsonwebtoken.Claims;
+import com.github.crudprac.repository.details.SignDetails;
+import com.github.crudprac.service.SignDetailsService;
 import io.jsonwebtoken.Jwts;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -26,13 +25,12 @@ public class JwtProvider {
     private final SecretKey secretKey;
     private final long tokenValidMilliseconds = 1000L * 60 * 60;
     private final String headerName = "Access-Token";
-    private final UserAuthDetailsService userAuthDetailsService;
+    private final SignDetailsService signDetailsService;
 
     public String createToken(String email, List<String> authorities) {
         Date now = new Date();
         return Jwts.builder()
                 .setSubject(email)
-                .claim("email", email)
                 .claim("authorities", authorities)
                 .setIssuedAt(now)
                 .setExpiration(new Date(now.getTime() + tokenValidMilliseconds))
@@ -46,9 +44,8 @@ public class JwtProvider {
 
     public boolean validateToken(String jwt) {
         try {
-            Claims claims = Jwts.parserBuilder().setSigningKey(secretKey).build().parseClaimsJws(jwt).getBody();
-            assert claims != null;
-            return new Date().before(claims.getExpiration());
+            Date exp = Jwts.parserBuilder().setSigningKey(secretKey).build().parseClaimsJws(jwt).getBody().getExpiration();
+            return new Date().before(exp);
         } catch (Exception e) {
             return false;
         }
@@ -58,8 +55,8 @@ public class JwtProvider {
         String email = getEmail(jwt);
         if (email == null) return null;
 
-        UserAuthDetails userAuthDetails = userAuthDetailsService.loadUserByUsername(email);
-        String encodedPassword = userAuthDetails.getPassword();
+        SignDetails signDetails = (SignDetails) signDetailsService.loadUserByUsername(email);
+        String encodedPassword = signDetails.getPassword();
         List<String> authorities = getAuthorities(jwt).orElseThrow(NullPointerException::new);
         List<SimpleGrantedAuthority> GrantedAuthorities = authorities.stream().map(SimpleGrantedAuthority::new).collect(Collectors.toList());
         return new UsernamePasswordAuthenticationToken(email, encodedPassword, GrantedAuthorities);
