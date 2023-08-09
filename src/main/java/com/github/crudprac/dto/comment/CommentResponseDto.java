@@ -1,13 +1,11 @@
-package com.github.crudprac.web.dto.comment;
+package com.github.crudprac.dto.comment;
 
 import com.github.crudprac.entity.Comment;
-import lombok.Getter;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-@Getter
-public class CommentResponse {
+public class CommentResponseDto {
 
     private Long id;
     private String comment;
@@ -25,4 +23,6 @@ public class CommentResponse {
         this.nickname = comment.getUser().getNickname();
         this.postsId = comment.getPosts().getId();
     }
+
+
 }

@@ -4,12 +4,10 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.Table;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 
 import javax.persistence.*;
-import java.time.LocalDate;
 
 @Builder
 @AllArgsConstructor
@@ -34,6 +32,7 @@ public class Comment {
     @LastModifiedDate
     private String modifiedDate;
 
+    // 댓글의 입장에선 게시글과 사용자는 다대일 관계이므로 @ManyToOne
     @ManyToOne
     @JoinColumn(name = "posts_id")
     private Posts posts;
@@ -42,8 +41,7 @@ public class Comment {
     @JoinColumn(name = "user_id")
     private User user; // 작성자
 
-
-    /* 댓글 수정을 위한 setter */
+    /* 댓글 수정 */
     public void update(String comment) {
         this.comment = comment;
     }

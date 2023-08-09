@@ -1,20 +1,13 @@
-package com.github.crudprac.web.dto.comment;
+package com.github.crudprac.dto.comment;
 
 import com.github.crudprac.entity.Comment;
 import com.github.crudprac.entity.Posts;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import com.github.crudprac.entity.User;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
-@Builder
-public class CommentRequest {
+public class CommentRequestDto {
     private Long id;
     private String comment;
     private String createdDate = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy.MM.dd HH:mm"));
@@ -35,4 +28,6 @@ public class CommentRequest {
 
         return comments;
     }
+
+
 }

@@ -1,17 +1,20 @@
 package com.github.crudprac.service;
 
+import com.github.crudprac.dto.comment.CommentRequestDto;
+import com.github.crudprac.dto.comment.CommentResponseDto;
+import com.github.crudprac.dto.CommentDto;
 import com.github.crudprac.entity.Comment;
 import com.github.crudprac.entity.Posts;
+import com.github.crudprac.entity.User;
 import com.github.crudprac.repository.CommentRepository;
 import com.github.crudprac.repository.PostsRepository;
 import com.github.crudprac.repository.UserRepository;
-import com.github.crudprac.web.dto.User;
-import com.github.crudprac.web.dto.comment.CommentRequest;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
@@ -21,24 +24,13 @@ public class CommentService {
     private final UserRepository userRepository;
     private final PostsRepository postsRepository;
 
-    /* Views Counting */
-    @Transactional
-    public int updateView(Long id) {
-        return postsRepository.updateView(id);
-    }
-
-    /* Paging */
-    @Transactional(readOnly = true)
-    public Page<Posts> pageList(Pageable pageable) {
-        return postsRepository.findAll(pageable);
-    }
-
     /* CREATE */
+    // User와 Posts의 정보를 받아 Comment에 저장할 수 있게 set
     @Transactional
-    public Long commentSave(String nickname, Long id, CommentRequest dto) {
+    public Long save(Long id, String nickname, CommentRequestDto dto) {
         User user = userRepository.findByNickname(nickname);
         Posts posts = postsRepository.findById(id).orElseThrow(() ->
-                new IllegalArgumentException("댓글 쓰기 실패: 해당 게시글이 존재하지 않습니다." + id));
+                new IllegalArgumentException("댓글 쓰기 실패: 해당 게시글이 존재하지 않습니다. " + id));
 
         dto.setUser(user);
         dto.setPosts(posts);
@@ -49,9 +41,19 @@ public class CommentService {
         return dto.getId();
     }
 
+    /* READ */
+    @Transactional(readOnly = true)
+    public List<CommentResponseDto> findAll(Long id) {
+        Posts posts = postsRepository.findById(id).orElseThrow(() ->
+                new IllegalArgumentException("해당 게시글이 존재하지 않습니다. id: " + id));
+        List<Comment> comments = posts.getComments();
+        return comments.stream().map(CommentResponseDto::new).collect(Collectors.toList());
+    }
+
+    // comment 객체에 데이터를 가져와 영속화시키고, 데이터를 변경하여 트랜잭션 종료 시점에 커밋
     /* UPDATE */
     @Transactional
-    public void update(Long postsId, Long id, CommentDto.Request dto) {
+    public void update(Long postsId, Long id, CommentRequestDto dto) {
         Comment comment = commentRepository.findByPostsIdAndId(postsId, id).orElseThrow(() ->
                 new IllegalArgumentException("해당 댓글이 존재하지 않습니다. " + id));
 
@@ -65,5 +67,8 @@ public class CommentService {
                 new IllegalArgumentException("해당 댓글이 존재하지 않습니다. id=" + id));
 
         commentRepository.delete(comment);
+    }
+
+    public Object commentSave(String nickname, Long id, CommentRequestDto dto) {
     }
 }

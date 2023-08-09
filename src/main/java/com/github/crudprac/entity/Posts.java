@@ -1,19 +1,20 @@
 package com.github.crudprac.entity;
 
+import com.github.crudprac.util.BaseTimeEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.mapping.List;
 
 import javax.persistence.*;
+import java.util.List;
 
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @Getter
 @Entity
-public class Posts extends Time {
+public class Posts extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -35,11 +36,14 @@ public class Posts extends Time {
     @JoinColumn(name = "user_id")
     private User user;
 
+    // 게시글 UI에서 댓글을 바로 보여주기 위해 FetchType을 EAGER로 설정, 펼쳐보기 같은 UI라면 Lazy
+    // 게시글이 삭제되면 댓글 또한 삭제되어야 하기 때문에 CascadeType.REMOVE 속성
     @OneToMany(mappedBy = "posts", fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
-    @OrderBy("id asc") // 댓글 정렬
+    // 댓글 정렬
+    @OrderBy("id asc")
     private List<Comment> comments;
 
-    /* 게시글 수정 메소드 */
+    /* 게시글 수정 */
     public void update(String title, String content) {
         this.title = title;
         this.content = content;

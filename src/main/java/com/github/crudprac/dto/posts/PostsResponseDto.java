@@ -1,7 +1,7 @@
-package com.github.crudprac.web.dto;
+package com.github.crudprac.dto.posts;
 
+import com.github.crudprac.dto.comment.CommentResponseDto;
 import com.github.crudprac.entity.Posts;
-import com.github.crudprac.web.dto.comment.CommentResponse;
 import lombok.Getter;
 
 import java.util.List;
@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
  */
 
 @Getter
-public class PostsResponse {
+public class PostsResponseDto {
 
     private Long id;
     private String title;
@@ -23,10 +23,11 @@ public class PostsResponse {
     private String createdDate, modifiedDate;
     private int view;
     private Long userId;
-    private List<CommentResponse> comments;
+    // comments 필드의 List 타입을 DTO 클래스로해서 엔티티간 무한 참조를 방지
+    private List<CommentResponseDto> comments;
 
     /* Entity -> Dto*/
-    public PostsResponse(Posts posts) {
+    public PostsResponseDto(Posts posts) {
         this.id = posts.getId();
         this.title = posts.getTitle();
         this.writer = posts.getWriter();
@@ -35,6 +36,6 @@ public class PostsResponse {
         this.modifiedDate = posts.getModifiedDate();
         this.view = posts.getView();
         this.userId = posts.getUser().getId();
-        this.comments = posts.getComments().stream().map(CommentResponse::new).collect(Collectors.toList());
+        this.comments = posts.getComments().stream().map(CommentResponseDto::new).collect(Collectors.toList());
     }
 }

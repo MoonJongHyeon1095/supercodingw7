@@ -1,12 +1,11 @@
 package com.github.crudprac.entity;
 
+import com.github.crudprac.util.BaseTimeEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.data.relational.core.mapping.Column;
 
-import javax.management.relation.Role;
 import javax.persistence.*;
 
 @AllArgsConstructor
@@ -14,7 +13,7 @@ import javax.persistence.*;
 @Builder
 @Getter
 @Entity
-public class User extends Time {
+public class User extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,16 +22,33 @@ public class User extends Time {
     @Column(nullable = false, length = 30, unique = true)
     private String username; // 아이디
 
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String nickname;
 
-    @Column(nullable = false, length = 100)
+    @Column(length = 100)
     private String password;
 
-    @Column(nullable = false, length = 50)
+    @Column(nullable = false, length = 50, unique = true)
     private String email;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Role role;
+
+    /* 회원정보 수정 */
+    public void modify(String nickname, String password) {
+        this.nickname = nickname;
+        this.password = password;
+    }
+
+    /* 소셜로그인시 이미 등록된 회원이라면 수정날짜만 업데이트해줘서
+     * 기존 데이터를 보존하도록 예외처리 */
+    public User updateModifiedDate() {
+        this.onPreUpdate();
+        return this;
+    }
+
+    public String getRoleValue() {
+        return this.role.getValue();
+    }
 }
