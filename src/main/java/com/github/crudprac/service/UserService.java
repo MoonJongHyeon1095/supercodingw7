@@ -68,17 +68,17 @@ public class UserService {
         String encodedPassword = userEntity.getPassword();
         if (!passwordEncoder.matches(password, encodedPassword)) return ResponseEntity.status(401).body(new MessageResponse("password가 옳지 않습니다."));
 
-        List<SimpleGrantedAuthority> authorities = getAuthorities(userEntity);
-        log.info("hello");
-        try {
-            Authentication newAuth = new UsernamePasswordAuthenticationToken(email, encodedPassword, authorities);
-            Authentication authentication = authenticationManager.authenticate(newAuth);
-            log.info("world");
-            SecurityContextHolder.getContext().setAuthentication(authentication);
-            log.info("hello world");
-        } catch (AuthenticationException e) {
-            log.warn("인증에 실패했습니다.");
-        }
+//        List<SimpleGrantedAuthority> authorities = getAuthorities(userEntity);
+//        log.info("hello");
+//        try {
+//            Authentication newAuth = new UsernamePasswordAuthenticationToken(email, encodedPassword, authorities);
+//            Authentication authentication = authenticationManager.authenticate(newAuth);
+//            log.info("world");
+//            SecurityContextHolder.getContext().setAuthentication(authentication);
+//            log.info("hello world");
+//        } catch (AuthenticationException e) {
+//            log.warn("인증에 실패했습니다.");
+//        }
 
         String jwtToken = jwtProvider.createToken(email, null);
         response.setHeader(jwtProvider.getHeaderName(), jwtToken);
