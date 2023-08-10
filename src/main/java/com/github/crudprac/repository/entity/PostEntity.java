@@ -14,7 +14,6 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Builder
 @EqualsAndHashCode(of="post_id")
-@Builder
 public class PostEntity {
 
     @Id

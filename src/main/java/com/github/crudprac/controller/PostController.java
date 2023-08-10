@@ -4,19 +4,13 @@ import com.github.crudprac.dto.PostRequestDto;
 import com.github.crudprac.dto.PostResponseDto;
 import com.github.crudprac.exceptions.NotFoundException;
 import com.github.crudprac.repository.UserJpaRepository;
-import com.github.crudprac.repository.details.SignDetails;
 import com.github.crudprac.repository.entity.UserEntity;
 import com.github.crudprac.service.PostService;
-import com.github.crudprac.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api")
@@ -40,7 +34,7 @@ public class PostController {
 
     @GetMapping("/posts/search")
     public List<PostResponseDto> findPostByEmail(
-            @RequestParam String author_email) throws IllegalAccessException {
+            @RequestParam String author_email) {
 
         UserEntity user = userJpaRepository.findByEmail(author_email)
                 .orElseThrow(()->new NotFoundException("존재하지 않는 email입니다."));

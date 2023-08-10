@@ -54,8 +54,11 @@ public class PostService {
         return postList;
     }
 
-    public List<PostResponseDto> findByUserId(int id) {
-        return null;
+    public List<PostResponseDto> findByUserId(int user_id) {
+        List<PostEntity> posts = postRepository.findByUserId(user_id);
+        return posts.stream()
+                .map(PostResponseDto::new) // PostEntity를 PostResponseDto로 변환
+                .collect(Collectors.toList());
     }
 
 //    public List<PostResponseDto> findByEmail(String author_email) {
