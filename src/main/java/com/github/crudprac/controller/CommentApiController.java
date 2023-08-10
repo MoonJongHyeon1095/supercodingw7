@@ -1,45 +1,50 @@
 package com.github.crudprac.controller;
 
-import com.github.crudprac.dto.comment.CommentRequestDto;
-import com.github.crudprac.dto.comment.CommentResponseDto;
+import com.github.crudprac.dto.comment.CommentsRequestDto;
+import com.github.crudprac.dto.comment.CommentsResponseDto;
 import com.github.crudprac.service.CommentService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Objects;
 
-@RequiredArgsConstructor
+
 @RequestMapping("/api")
 @RestController
 public class CommentApiController {
 
     private final CommentService commentService;
 
+    public CommentApiController(CommentService commentService) {
+        this.commentService = commentService;
+    }
+
     /* CREATE */
     @PostMapping("/comments")
-    public CommentResponseDto save(@RequestBody CommentRequestDto commentRequestDto) {
-        return commentService.save(commentRequestDto);
+    public String registerComments(@RequestBody CommentsRequestDto commentsRequestDto) {
+        commentService.savaItem(commentsRequestDto);
+        return "댓글이 성공적으로 작성되었습니다.";
     }
 
     /* READ */
+
     @GetMapping("/comments")
-    public List<CommentResponseDto> read(@RequestBody CommentRequestDto commentRequestDto) {
-        return commentService.findAll(commentRequestDto);
+    public List<CommentsResponseDto> findAllComments() {
+        return commentService.findAllComments();
     }
 
     /* UPDATE */
-    @PutMapping({"/comments/{comment_id}"})
-    public ResponseEntity<Objects> update(@PathVariable Integer id, @RequestBody CommentRequestDto commentRequestDto) {
-        commentService.update(id, commentRequestDto);
-        return (ResponseEntity<Objects>) ResponseEntity.ok();
+    @PutMapping("/comments/{id}")
+    public String updateComments(@PathVariable String id, @RequestBody CommentsRequestDto commentsRequestDto) {
+        commentService.updateComments(id, commentsRequestDto);
+        return "댓글이 성공적으로 수정되었습니다.";
     }
 
     /* DELETE */
-    @DeleteMapping("/comments/{comment_id}")
-    public ResponseEntity<Objects> delete(@PathVariable Integer id) {
-        commentService.delete(id);
-        return (ResponseEntity<Objects>) ResponseEntity.ok();
+    @DeleteMapping("/comments/{id}")
+    public String deleteCommentsByPathId(@PathVariable String id) {
+        commentService.deleteComments(id);
+        return "Object with id =" + id + "has been deleted";
     }
+
 }
