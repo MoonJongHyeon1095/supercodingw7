@@ -3,6 +3,8 @@ package com.github.crudprac.repository.entity;
 import lombok.*;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
@@ -30,4 +32,9 @@ public class UserEntity {
     @Column(name="authority")
     @Enumerated(value=EnumType.STRING)
     private UserRole authority;
+
+    @OneToMany(mappedBy = "user")
+    private final List<PostEntity> posts = new ArrayList<>();
+
+
 }
