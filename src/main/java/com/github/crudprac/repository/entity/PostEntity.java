@@ -10,7 +10,6 @@ import lombok.*;
 @Table(name = "posts") // 매핑할 테이블의 이름을 지정
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode(of="post_id")
 public class PostEntity extends TimeStamped{
 
     @Id
