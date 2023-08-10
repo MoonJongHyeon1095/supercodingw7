@@ -11,6 +11,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.NotAcceptableStatusException;
 
+import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -31,10 +33,14 @@ public class PostService {
         String username = email;
         Optional<UserEntity> userOptional = userJpaRepository.findByEmail(email);
         UserEntity user = userOptional.orElseThrow(() -> new NotFoundException("존재하지 않는 email입니다."));
-//        Integer user_id =user.getId();
-//
-//        System.out.println("userId: " + user_id);
-        PostEntity postEntity = new PostEntity(title, content, username, user);
+
+        PostEntity postEntity = PostEntity.builder()
+                .title(title)
+                .content(content)
+                .username(username)
+                .user(user)
+                .created_at(LocalDateTime.now())
+                .build();
 
         try{
             postRepository.save(postEntity);

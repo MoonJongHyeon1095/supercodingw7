@@ -7,11 +7,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @EqualsAndHashCode(of="id")
+@ToString
 @Entity
 @Table(name="users")
 public class UserEntity {
@@ -35,6 +35,4 @@ public class UserEntity {
 
     @OneToMany(mappedBy = "user")
     private final List<PostEntity> posts = new ArrayList<>();
-
-
 }

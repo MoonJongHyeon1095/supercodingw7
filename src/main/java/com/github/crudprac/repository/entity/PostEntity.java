@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 @Table(name = "posts") // 매핑할 테이블의 이름을 지정
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 @EqualsAndHashCode(of="post_id")
 public class PostEntity {
 
