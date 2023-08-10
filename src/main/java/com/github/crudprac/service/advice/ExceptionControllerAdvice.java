@@ -1,6 +1,7 @@
 package com.github.crudprac.service.advice;
 
 import com.github.crudprac.exceptions.BadRequestException;
+import com.github.crudprac.exceptions.ConflictException;
 import com.github.crudprac.exceptions.NotFoundException;
 import com.github.crudprac.dto.MessageResponse;
 import lombok.extern.slf4j.Slf4j;
@@ -29,5 +30,11 @@ public class ExceptionControllerAdvice {
         return new MessageResponse(exceptionMessage);
     }
 
-
+    @ExceptionHandler(ConflictException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public MessageResponse handleConlictException(ConflictException conflictException) {
+        String exceptionMessage = conflictException.getMessage();
+        log.warn("Not found exception: {}", exceptionMessage);
+        return new MessageResponse(exceptionMessage);
+    }
 }

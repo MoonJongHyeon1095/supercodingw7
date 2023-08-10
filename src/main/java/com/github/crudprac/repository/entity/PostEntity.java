@@ -23,8 +23,6 @@ public class PostEntity extends TimeStamped{
     @Column(name="username", length = 20, nullable = false)
     private String username;
 
-
-
     public PostEntity(String title, String content, String username) {
         this.title = title;
         this.content = content;

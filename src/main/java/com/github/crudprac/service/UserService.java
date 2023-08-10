@@ -1,6 +1,7 @@
 package com.github.crudprac.service;
 
 import com.github.crudprac.config.security.JwtProvider;
+import com.github.crudprac.exceptions.ConflictException;
 import com.github.crudprac.repository.SignJpaRepository;
 import com.github.crudprac.repository.UserJpaRepository;
 import com.github.crudprac.repository.entity.SignEntity;
@@ -30,19 +31,29 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final JwtProvider jwtProvider;
 
+    /**
+     * 유저 회원가입을 진행합니다.
+     *
+     * @param signRequest email, password, username을 담고 있는 SignRequest 객체입니다.
+     *                    email, password, username은 null이 될 수 없습니다.
+     * @return 200 OK: 회원가입에 성공하면 "회원가입이 완료되었습니다" 메세지가 담긴 MessageResponse 객체를 반환합니다.
+     */
     @Transactional(transactionManager = "tmJpa")
     public ResponseEntity<MessageResponse> signUp(SignRequest signRequest) {
         String email = signRequest.getEmail();
         String password = signRequest.getPassword();
         String name = signRequest.getName();
 
-        if (email == null || password == null) throw new BadRequestException("email 혹은 password가 누락되었습니다.");
+        // email, password, name 누락됐는지 검사
+        if (email == null || password == null || name == null) throw new BadRequestException("email 혹은 password가 누락되었습니다.");
 
-        // 이미 존재하는 email이면 409 Conflict
-        if (userJpaRepository.existsByEmail(email)) return ResponseEntity.status(409).body(new MessageResponse("이미 가입된 email입니다."));
+        // 이미 회원가입된 email이면 409 Conflict
+        if (userJpaRepository.existsByEmail(email)) throw new ConflictException("이미 가입된 email입니다.");
 
+        // pw 인코딩
         String encodedPassword = encode(password);
 
+        // users 테이블에 저장할 user 생성
         UserEntity user = UserEntity.builder()
                 .email(email)
                 .password(encodedPassword)
@@ -55,18 +66,35 @@ public class UserService {
         return ResponseEntity.ok(new MessageResponse("회원가입이 완료되었습니다."));
     }
 
+    /**
+     * 유저 로그인을 진행합니다.
+     *
+     * @param signRequest 로그인 하는 유저의 email, password를 담고 있는 SignRequest 객체입니다.
+     *                    email, password는 null이 될 수 없습니다.
+     * @return 200 OK: "로그인이 성공적으로 완료되었습니다" 메세지가 담긴 MessageResponse 객체를 반환합니다.
+     */
     public ResponseEntity<MessageResponse> login(SignRequest signRequest, HttpServletResponse response) {
         String email = signRequest.getEmail();
         String password = signRequest.getPassword();
+
+        // email, pw가 누락되었는지 검사
         if (email == null || password == null) throw new BadRequestException("email 혹은 password가 누락되었습니다.");
 
+        // email로 user 검색
         UserEntity user = userJpaRepository.findByEmail(email).orElseThrow(()->new NotFoundException("존재하지 않는 email입니다."));
 
+        // 이미 로그인 되어 있는지 검사
+        if (signJpaRepository.existsByEmail(email)) throw new ConflictException("이미 로그인된 email입니다.");
+
+        // pw가 올바른지 검사
         String encodedPassword = user.getPassword();
         if (!passwordEncoder.matches(password, encodedPassword)) return ResponseEntity.status(401).body(new MessageResponse("password가 옳지 않습니다."));
 
+        // 권한 획득
         List<String> authorities = getAuthorities(user);
 
+        // 로그인 정보를 저장하는 sign 객체
+        // 로그인 하면 signs 테이블에 저장, 로그아웃하면 제거
         SignEntity sign = SignEntity.builder()
                 .email(email)
                 .password(encodedPassword)
@@ -74,26 +102,47 @@ public class UserService {
                 .build();
         signJpaRepository.save(sign);
 
+        // JWT 토큰 생성, response 헤더에 붙여서 클라이언트로 전달
         String jwtToken = jwtProvider.createToken(email, authorities);
         response.setHeader(jwtProvider.getHeaderName(), jwtToken);
 
         return ResponseEntity.ok(new MessageResponse("로그인이 성공적으로 완료되었습니다."));
     }
 
+    /**
+     * 유저의 로그아웃을 진행합니다.
+     *
+     * @param logoutRequest email이 담긴 logoutRequest 객체입니다.
+     *                      email은 null이 될 수 없습니다.
+     * @return 200 OK: "로그아웃되었습니다." 메세지가 담긴 MessageResponse 객체를 반환합니다.
+     */
     @Transactional(transactionManager = "tmJpa")
     public ResponseEntity<MessageResponse> logout(LogoutRequest logoutRequest) {
         String email = logoutRequest.getEmail();
 
+        // 로그인된 email인지 검사
         if (!signJpaRepository.existsByEmail(email)) return ResponseEntity.badRequest().body(new MessageResponse("로그인된 적 없는 email입니다."));
 
+        // signs 테이블에서 제거
         signJpaRepository.deleteByEmail(email);
         return ResponseEntity.ok(new MessageResponse("로그아웃되었습니다."));
     }
 
+    /**
+     * user의 권한들을 가져옵니다.
+     *
+     * @param userEntity 권한 정보를 가져올 user
+     * @return 권한 정보들을 담은 리스트
+     */
     private List<String> getAuthorities(UserEntity userEntity) {
         return List.of(userEntity.getAuthority().name());
     }
 
+    /**
+     * 주어진 비밀번호를 인코딩하여 반환합니다.
+     * @param password 인코딩할 비밀번호
+     * @return 인코딩된 비밀번호
+     */
     private String encode(String password) {
         return passwordEncoder.encode(password);
     }
