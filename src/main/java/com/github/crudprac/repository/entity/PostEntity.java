@@ -13,6 +13,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(of="post_id")
+@Builder
 public class PostEntity {
 
     @Id
@@ -37,5 +38,11 @@ public class PostEntity {
         this.content = content;
         this.username = username;
         this.user = user;
+    }
+
+    public PostEntity(String title, String content, String username) {
+        this.title = title;
+        this.content = content;
+        this.username = username;
     }
 }
