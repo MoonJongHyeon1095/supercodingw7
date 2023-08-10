@@ -13,7 +13,7 @@ import lombok.Setter;
 //@Table(name = "posts") // 매핑할 테이블의 이름을 지정
 @NoArgsConstructor
 @AllArgsConstructor
-public class PostEntity {
+public class PostEntity extends TimeStamped {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer post_id;
