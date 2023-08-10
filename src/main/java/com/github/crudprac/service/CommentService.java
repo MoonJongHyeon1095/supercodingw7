@@ -2,61 +2,86 @@ package com.github.crudprac.service;
 
 import com.github.crudprac.dto.comment.CommentsRequestDto;
 import com.github.crudprac.dto.comment.CommentsResponseDto;
-import com.github.crudprac.entity.CommentsEntity;
+import com.github.crudprac.exceptions.NotFoundException;
+import com.github.crudprac.repository.PostRepository;
+import com.github.crudprac.repository.UserJpaRepository;
+import com.github.crudprac.repository.entity.CommentsEntity;
 import com.github.crudprac.repository.CommentsRepository;
+import com.github.crudprac.repository.entity.PostEntity;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
+@Slf4j
 public class CommentService {
-    private CommentsRepository commentsRepository;
+    private final CommentsRepository commentsRepository;
+    private final PostRepository postRepository;
+    private final UserJpaRepository userJpaRepository;
 
-    public CommentService(CommentsRepository commentsRepository) {
-        this.commentsRepository = commentsRepository;
-    }
-
-    public List<CommentsResponseDto> findAllComments() {
-        List<CommentsEntity> commentsEntities = commentsRepository.findAllComments();
+        public List<CommentsResponseDto> findComments() {
+        List<CommentsEntity> commentsEntities = commentsRepository.findAll();
         return commentsEntities.stream().map(CommentsResponseDto::new).collect(Collectors.toList());
     }
 
-    public Integer savaItem(CommentsRequestDto commentsRequestDto) {
-        CommentsEntity commentsEntity = new CommentsEntity(null, commentsRequestDto.getLikeCount(), commentsRequestDto.getContent(),
-                commentsRequestDto.getCreatedDate());
-        return commentsRepository.saveComments(commentsEntity);
-    }
+//    public CommentsResponseDto createComments(CommentsRequestDto commentsRequestDto) {
+//        String content = commentsRequestDto.getContent();
+//        String userName = commentsRequestDto.getUserName();
+//
+//        PostEntity postEntity = PostEntity.builder()
+//                .id(id)
+//                .content(content)
+//                .userName(userName)
+//                .likeCount(likeCount)
+//                .user(user)
+//                .post(post)
+//                .createdDate(createdDate)
+//                .build();
+//        return commentsRepository.saveComments(commentsEntity);
+//    }
 
-    public CommentsResponseDto findItemById(String id) {
-        Integer idInt = Integer.parseInt(id);
-        CommentsEntity commentsEntity = commentsRepository.findCommentsById(idInt);
-        CommentsResponseDto comments = new CommentsResponseDto(commentsEntity);
-        return comments;
-    }
+    public CommentsEntity createComments(CommentsRequestDto commentsRequestDto) {
+//            commentsRequestDto.getPostId();
 
-    public List<CommentsResponseDto> findCommentsByIds(List<String> ids) {
-        List<CommentsEntity> commentsEntities = commentsRepository.findAllComments();
-        return commentsEntities.stream()
-                .map(CommentsResponseDto::new)
-                .filter((comments -> ids.contains(comments.getId())))
-                .collect(Collectors.toList());
+        PostEntity post = postRepository.findById(commentsRequestDto.getPostId()).orElseThrow(()->new NotFoundException("존재하지 않는 id입니다."));
+        CommentsEntity commentsEntity = CommentsEntity.builder()
+                .content(commentsRequestDto.getContent())
+                .likeCount(0)
+                .post(post)
+                .userName(commentsRequestDto.getUserName())
+                .created_at(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy.MM.dd HH:mm")))
+                .user(post.getUser())
+                .build();
+        return commentsRepository.save(commentsEntity);
     }
 
     public void deleteComments(String id) {
         Integer idInt = Integer.parseInt(id);
-        commentsRepository.deleteComments(idInt);
+        commentsRepository.deleteById(idInt);
     }
 
+    @Transactional(transactionManager = "tmJpa")
     public CommentsResponseDto updateComments(String id, CommentsRequestDto commentsRequestDto) {
         Integer idInt = Integer.valueOf(id);
-        CommentsEntity commentsEntity = new CommentsEntity(idInt, commentsRequestDto.getLikeCount(),
-                commentsRequestDto.getContent(), commentsRequestDto.getCreatedDate()
-        );
+        CommentsEntity commentsEntity = commentsRepository.findById(idInt).orElseThrow(()->new NotFoundException("존재하지 않는 id입니다."));
 
-        CommentsEntity commentsEntityUpdated = commentsRepository.updateCommentsEntity(idInt, commentsEntity);
-
-        return new CommentsResponseDto(commentsEntityUpdated);
+        String content = commentsRequestDto.getContent();
+        commentsEntity.setContent(content);
+         commentsRepository.findById(idInt);
+//        CommentsEntity commentsEntityUpdated = commentsRepository.updateCommentsEntity(idInt, commentsEntity);
+        return CommentsResponseDto.builder()
+                .id(idInt)
+                .content(content)
+                .userName(commentsEntity.getUserName())
+                .post(commentsEntity.getPost())
+                .build();
     }
 
 }

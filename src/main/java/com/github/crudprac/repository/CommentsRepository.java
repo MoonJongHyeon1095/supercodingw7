@@ -1,7 +1,8 @@
 package com.github.crudprac.repository;
 
-import com.github.crudprac.entity.CommentsEntity;
+import com.github.crudprac.repository.entity.CommentsEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
@@ -12,19 +13,16 @@ import java.util.List;
 //    Optional<Comments> findByPostsIdAndId(Integer postsId, Integer id);
 //}
 
-public interface CommentsRepository {
+@Repository
+public interface CommentsRepository extends JpaRepository<CommentsEntity, Integer>{
 
-    List<CommentsEntity> findAllComments();
+//    List<CommentsEntity> fin();
+//    CommentsEntity createComments(CommentsEntity commentsEntity);
 
-    Integer saveComments(CommentsEntity commentsEntity);
+//    CommentsEntity up(Integer idInt, CommentsEntity commentsEntity);
 
-    CommentsEntity updateCommentsEntity(Integer idInt, CommentsEntity commentsEntity);
+//    void (int parseInt);
 
-    void deleteComments(int parseInt);
+//    CommentsEntity findCommentsById(Integer idInt);
 
-    CommentsEntity findCommentsById(Integer idInt);
-    void updateCommentsStock(Integer commentsId, Integer i);
-
-
-    void updateCommentsStock(Integer commentsId, String content);
 }

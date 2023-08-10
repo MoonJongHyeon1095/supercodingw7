@@ -4,6 +4,7 @@ import com.github.crudprac.dto.comment.CommentsRequestDto;
 import com.github.crudprac.dto.comment.CommentsResponseDto;
 import com.github.crudprac.service.CommentService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -11,26 +12,23 @@ import java.util.List;
 
 @RequestMapping("/api")
 @RestController
-public class CommentApiController {
+@RequiredArgsConstructor
+public class CommentController {
 
     private final CommentService commentService;
 
-    public CommentApiController(CommentService commentService) {
-        this.commentService = commentService;
-    }
-
     /* CREATE */
     @PostMapping("/comments")
-    public String registerComments(@RequestBody CommentsRequestDto commentsRequestDto) {
-        commentService.savaItem(commentsRequestDto);
+    public String createComments(@RequestBody CommentsRequestDto commentsRequestDto) {
+        commentService.createComments(commentsRequestDto);
         return "댓글이 성공적으로 작성되었습니다.";
     }
 
     /* READ */
 
     @GetMapping("/comments")
-    public List<CommentsResponseDto> findAllComments() {
-        return commentService.findAllComments();
+    public List<CommentsResponseDto> findComments() {
+        return commentService.findComments();
     }
 
     /* UPDATE */
