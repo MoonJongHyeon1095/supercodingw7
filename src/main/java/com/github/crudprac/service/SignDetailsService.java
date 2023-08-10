@@ -5,9 +5,7 @@ import com.github.crudprac.repository.SignJpaRepository;
 import com.github.crudprac.repository.details.SignDetails;
 import com.github.crudprac.repository.entity.SignEntity;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 @Service
