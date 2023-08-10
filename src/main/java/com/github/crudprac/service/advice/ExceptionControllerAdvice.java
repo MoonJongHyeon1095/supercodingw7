@@ -1,9 +1,6 @@
 package com.github.crudprac.service.advice;
 
-import com.github.crudprac.exceptions.BadRequestException;
-import com.github.crudprac.exceptions.ConflictException;
-import com.github.crudprac.exceptions.JwtIsNotValidException;
-import com.github.crudprac.exceptions.NotFoundException;
+import com.github.crudprac.exceptions.*;
 import com.github.crudprac.dto.MessageResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -41,5 +38,12 @@ public class ExceptionControllerAdvice {
     public MessageResponse handleJwtIsNotValidException(JwtIsNotValidException jwtIsNotValidException) {
         log.warn(jwtIsNotValidException.toString());
         return new MessageResponse(jwtIsNotValidException.getMessage());
+    }
+
+    @ExceptionHandler(DatabaseException.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public MessageResponse handleDatabaseException(DatabaseException databaseException) {
+        log.warn(databaseException.toString());
+        return new MessageResponse(databaseException.getMessage());
     }
 }

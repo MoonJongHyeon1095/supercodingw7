@@ -39,7 +39,7 @@ public class SecurityConfig{
                 // 접근 권한 설정
                 .authorizeRequests()
                     // 지정된 경로에 대해 모두 접근 허용
-                    .antMatchers("/resources/static/**", "/api/signup", "/api/login").permitAll()
+                    .antMatchers("/resources/static/**", "/api/signup", "/api/login", "/api/logout").permitAll()
                 // 나머지는 인증 필요
                 .anyRequest().authenticated()
                 .and()

@@ -12,6 +12,7 @@ import com.github.crudprac.dto.LogoutRequest;
 import com.github.crudprac.dto.MessageResponse;
 import com.github.crudprac.dto.SignRequest;
 import com.github.crudprac.repository.entity.UserRole;
+import com.github.crudprac.util.JpaManager;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -61,7 +62,8 @@ public class UserService {
                 .authority(UserRole.USER)
                 .build();
 
-        userJpaRepository.save(user);
+        // user 저장
+        JpaManager.managedSave(userJpaRepository, user);
 
         return ResponseEntity.ok(new MessageResponse("회원가입이 완료되었습니다."));
     }
@@ -88,7 +90,7 @@ public class UserService {
 
         // pw가 올바른지 검사
         String encodedPassword = user.getPassword();
-        if (!passwordEncoder.matches(password, encodedPassword)) return ResponseEntity.status(401).body(new MessageResponse("password가 옳지 않습니다."));
+        if (!passwordEncoder.matches(password, encodedPassword)) throw new BadRequestException("password가 옳지 않습니다.");
 
         // 권한 획득
         List<String> authorities = getAuthorities(user);
@@ -100,7 +102,8 @@ public class UserService {
                 .password(encodedPassword)
                 .user(user)
                 .build();
-        signJpaRepository.save(sign);
+
+        JpaManager.managedSave(signJpaRepository, sign);
 
         // JWT 토큰 생성, response 헤더에 붙여서 클라이언트로 전달
         String jwtToken = jwtProvider.createToken(email, authorities);
@@ -145,8 +148,5 @@ public class UserService {
      */
     private String encode(String password) {
         return passwordEncoder.encode(password);
-    }
-
-    public void findByEmail() {
     }
 }

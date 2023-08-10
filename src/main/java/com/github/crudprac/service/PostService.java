@@ -7,9 +7,9 @@ import com.github.crudprac.repository.UserJpaRepository;
 import com.github.crudprac.repository.entity.PostEntity;
 import com.github.crudprac.repository.PostRepository;
 import com.github.crudprac.repository.entity.UserEntity;
+import com.github.crudprac.util.JpaManager;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.NotAcceptableStatusException;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -41,12 +41,14 @@ public class PostService {
                 .created_at(LocalDateTime.now())
                 .build();
 
-        try{
-            postRepository.save(postEntity);
-            return new PostResponseDto(postEntity);
-        } catch (RuntimeException exception){
-            throw new NotAcceptableStatusException("save 에러");
-        }
+        PostEntity savedPost = JpaManager.managedSave(postRepository, postEntity);
+        return new PostResponseDto(savedPost);
+//        try{
+//            postRepository.save(postEntity);
+//            return new PostResponseDto(postEntity);
+//        } catch (RuntimeException exception){
+//            throw new NotAcceptableStatusException("save 에러");
+//        }
     }
 
     public List<PostResponseDto> findAll() {
