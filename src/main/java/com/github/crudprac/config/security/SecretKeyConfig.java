@@ -1,6 +1,5 @@
 package com.github.crudprac.config.security;
 
-import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -15,7 +14,7 @@ import java.util.Base64;
 public class SecretKeyConfig {
 
     @Bean
-    public SecretKey secretKey(@Value("${jwt.secret-key-source}") String secretKeySource) throws NoSuchAlgorithmException {
+    public SecretKey secretKey(@Value("${jwt.secret-key-source}") String secretKeySource) throws NoSuchAlgorithmException{
         MessageDigest digest = MessageDigest.getInstance("SHA-256");
         byte[] sha256SecretKeySource = digest.digest(secretKeySource.getBytes(StandardCharsets.UTF_8));
         return new SecretKeySpec(Base64.getEncoder().encode(sha256SecretKeySource), "HmacSHA256");

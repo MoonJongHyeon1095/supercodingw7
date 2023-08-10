@@ -32,9 +32,6 @@ public class PostService {
         String username = email;
         Optional<UserEntity> userOptional = userJpaRepository.findByEmail(email);
         UserEntity user = userOptional.orElseThrow(() -> new NotFoundException("존재하지 않는 email입니다."));
-//        Integer user_id =user.getId();
-//
-//        System.out.println("userId: " + user_id)
 
         PostEntity postEntity = PostEntity.builder()
                 .title(title)

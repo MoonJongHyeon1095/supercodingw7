@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 @Table(name = "posts") // 매핑할 테이블의 이름을 지정
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 @EqualsAndHashCode(of="post_id")
 @Builder
 public class PostEntity {
@@ -32,8 +33,8 @@ public class PostEntity {
     @JoinColumn(name="user_id")
     private UserEntity user;
 
-
     public PostEntity(String title, String content, String username, UserEntity user) {
+
         this.title = title;
         this.content = content;
         this.username = username;
