@@ -11,7 +11,8 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(of="post_id")
-public class PostEntity {
+public class PostEntity extends TimeStamped{
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer post_id;

@@ -18,5 +18,6 @@ public class PostResponseDto {
         this.title = postEntity.getTitle();
         this.contents = postEntity.getContent();
         this.author = postEntity.getUsername();
+        this.created_at = postEntity.getCreated_at();
     }
 }
