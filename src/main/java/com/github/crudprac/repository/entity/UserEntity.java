@@ -29,9 +29,8 @@ public class UserEntity {
     @Column(name="username", length = 20, nullable = false)
     private String name;
 
-    @Column(name="authority")
-    @Enumerated(value=EnumType.STRING)
-    private UserRole authority;
+    @OneToMany
+    private List<AuthorityEntity> authorities;
 
     @OneToMany(mappedBy = "user")
     private final List<PostEntity> posts = new ArrayList<>();

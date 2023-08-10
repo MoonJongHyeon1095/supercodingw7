@@ -2,8 +2,10 @@ package com.github.crudprac.service;
 
 import com.github.crudprac.config.security.JwtProvider;
 import com.github.crudprac.exceptions.ConflictException;
+import com.github.crudprac.repository.AuthorityJpaRepository;
 import com.github.crudprac.repository.SignJpaRepository;
 import com.github.crudprac.repository.UserJpaRepository;
+import com.github.crudprac.repository.entity.AuthorityEntity;
 import com.github.crudprac.repository.entity.SignEntity;
 import com.github.crudprac.repository.entity.UserEntity;
 import com.github.crudprac.exceptions.BadRequestException;
@@ -11,7 +13,7 @@ import com.github.crudprac.exceptions.NotFoundException;
 import com.github.crudprac.dto.LogoutRequest;
 import com.github.crudprac.dto.MessageResponse;
 import com.github.crudprac.dto.SignRequest;
-import com.github.crudprac.repository.entity.UserRole;
+import com.github.crudprac.repository.entity.AuthorityType;
 import com.github.crudprac.util.JpaManager;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletResponse;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -29,6 +32,7 @@ import java.util.List;
 public class UserService {
     private final UserJpaRepository userJpaRepository;
     private final SignJpaRepository signJpaRepository;
+    private final AuthorityJpaRepository authorityJpaRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtProvider jwtProvider;
 
@@ -54,16 +58,20 @@ public class UserService {
         // pw 인코딩
         String encodedPassword = encode(password);
 
-        // users 테이블에 저장할 user 생성
+        // user 저장
         UserEntity user = UserEntity.builder()
                 .email(email)
                 .password(encodedPassword)
                 .name(name)
-                .authority(UserRole.USER)
                 .build();
-
-        // user 저장
         JpaManager.managedSave(userJpaRepository, user);
+
+        // 기본적으로 회원가입하면 모두 USER 권한 획득
+        AuthorityEntity authority = AuthorityEntity.builder()
+                .authority(AuthorityType.USER.name())
+                .user(user)
+                .build();
+        JpaManager.managedSave(authorityJpaRepository, authority);
 
         return ResponseEntity.ok(new MessageResponse("회원가입이 완료되었습니다."));
     }
@@ -93,22 +101,22 @@ public class UserService {
         if (!passwordEncoder.matches(password, encodedPassword)) throw new BadRequestException("password가 옳지 않습니다.");
 
         // 권한 획득
-        List<String> authorities = getAuthorities(user);
+        List<String> authorities = user.getAuthorities().stream().map(AuthorityEntity::getAuthority).collect(Collectors.toList());
+
+        // JWT 토큰 생성
+        String jwtToken = jwtProvider.createToken(email, authorities);
 
         // 로그인 정보를 저장하는 sign 객체
         // 로그인 하면 signs 테이블에 저장, 로그아웃하면 제거
         SignEntity sign = SignEntity.builder()
                 .email(email)
-                .password(encodedPassword)
+                .token(jwtToken)
                 .user(user)
                 .build();
-
         JpaManager.managedSave(signJpaRepository, sign);
 
-        // JWT 토큰 생성, response 헤더에 붙여서 클라이언트로 전달
-        String jwtToken = jwtProvider.createToken(email, authorities);
+        // 리스폰스 헤더에 붙여서 클라이언트로 토큰 전달
         response.setHeader(jwtProvider.getHeaderName(), jwtToken);
-
         return ResponseEntity.ok(new MessageResponse("로그인이 성공적으로 완료되었습니다."));
     }
 
@@ -131,15 +139,15 @@ public class UserService {
         return ResponseEntity.ok(new MessageResponse("로그아웃되었습니다."));
     }
 
-    /**
-     * user의 권한들을 가져옵니다.
-     *
-     * @param userEntity 권한 정보를 가져올 user
-     * @return 권한 정보들을 담은 리스트
-     */
-    private List<String> getAuthorities(UserEntity userEntity) {
-        return List.of(userEntity.getAuthority().name());
-    }
+//    /**
+//     * user의 권한들을 가져옵니다.
+//     *
+//     * @param userEntity 권한 정보를 가져올 user
+//     * @return 권한 정보들을 담은 리스트
+//     */
+//    private List<String> getAuthorities(UserEntity userEntity) {
+//        return List.of(userEntity.getAuthority().name());
+//    }
 
     /**
      * 주어진 비밀번호를 인코딩하여 반환합니다.

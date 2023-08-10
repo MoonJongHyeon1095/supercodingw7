@@ -27,7 +27,7 @@ public class JwtProvider {
     private final SecretKey secretKey;
     private final long tokenValidMilliseconds = 1000L * 60 * 60;
     private final String headerName = "Access-Token";
-    private final SignDetailsService signDetailsService;
+//    private final SignDetailsService signDetailsService;
 
     /**
      * JWT 토큰을 생성합니다.
@@ -79,11 +79,11 @@ public class JwtProvider {
      */
     public UsernamePasswordAuthenticationToken createAuthentication(String jwt) {
         String email = getEmail(jwt).orElseThrow(()->new JwtIsNotValidException("신뢰할 수 없는 토큰입니다."));
-        SignDetails signDetails = (SignDetails) signDetailsService.loadUserByUsername(email);
-        String encodedPassword = signDetails.getPassword();
+//        SignDetails signDetails = (SignDetails) signDetailsService.loadUserByUsername(email);
+//        String encodedPassword = signDetails.getPassword();
         List<String> authorities = getAuthorities(jwt).orElseThrow(()->new JwtIsNotValidException("신뢰할 수 없는 토큰입니다."));
         List<SimpleGrantedAuthority> GrantedAuthorities = authorities.stream().map(SimpleGrantedAuthority::new).collect(Collectors.toList());
-        return new UsernamePasswordAuthenticationToken(email, encodedPassword, GrantedAuthorities);
+        return new UsernamePasswordAuthenticationToken(email, jwt, GrantedAuthorities);
     }
 
     /**
@@ -93,7 +93,7 @@ public class JwtProvider {
      * @return Claims
      * @throws JwtIsNotValidException JWT 토큰이 유효하지 않을 경우 발생합니다.
      */
-    private Claims parseClaims(String jwt) throws JwtIsNotValidException {
+    public Claims parseClaims(String jwt) throws JwtIsNotValidException {
         try {
             return Jwts.parserBuilder().setSigningKey(secretKey).build().parseClaimsJws(jwt).getBody();
         } catch (ExpiredJwtException e) {

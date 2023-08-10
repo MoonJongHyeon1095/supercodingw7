@@ -21,8 +21,8 @@ public class SignEntity {
     @Column(name="email", length = 20, unique = true, nullable = false)
     private String email;
 
-    @Column(name="password", length = 100, nullable = false)
-    private String password;
+    @Column(name="token", length = 300, unique = true, nullable = false)
+    private String token;
 
     @OneToOne
     @JoinColumn(name="user_id")

@@ -9,6 +9,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Builder
 @Getter
@@ -17,20 +18,19 @@ import java.util.List;
 @ToString
 @Primary
 public class SignDetails implements UserDetails {
-    private Integer signId;
     private String email;
-    private String password;
-    private UserEntity user;
+    private String token;
+    private List<String> authorities;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority(user.getAuthority().name()));
+        return authorities.stream().map(SimpleGrantedAuthority::new).collect(Collectors.toList());
     }
     //SecurityContextHolder 안의 SecurityContext 안의 Authentication은 Principal, Credentials, Authorities로 구성.
     //Principal에 UserDetails가 들어간다.
     @Override
     public String getPassword() {
-        return password;
+        return token;
     }
 
     @Override

@@ -3,10 +3,14 @@ package com.github.crudprac.service;
 import com.github.crudprac.exceptions.NotFoundException;
 import com.github.crudprac.repository.SignJpaRepository;
 import com.github.crudprac.repository.details.SignDetails;
+import com.github.crudprac.repository.entity.AuthorityEntity;
 import com.github.crudprac.repository.entity.SignEntity;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -23,12 +27,12 @@ public class SignDetailsService implements UserDetailsService {
     @Override
     public SignDetails loadUserByUsername(String email) {
         SignEntity sign = signJpaRepository.findByEmail(email).orElseThrow(()->new NotFoundException("존재하지 않는 email입니다."));
+        List<String> authorities = sign.getUser().getAuthorities().stream().map(AuthorityEntity::getAuthority).collect(Collectors.toList());
 
         return SignDetails.builder()
-                .signId(sign.getId())
                 .email(sign.getEmail())
-                .password(sign.getPassword())
-                .user(sign.getUser())
+                .token(sign.getToken())
+                .authorities(authorities)
                 .build();
     }
 }

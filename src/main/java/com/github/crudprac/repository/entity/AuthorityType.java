@@ -1,6 +1,6 @@
 package com.github.crudprac.repository.entity;
 
-public enum UserRole {
+public enum AuthorityType {
     USER,
     ADMIN;
 }
