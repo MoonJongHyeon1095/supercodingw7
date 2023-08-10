@@ -4,6 +4,8 @@ import javax.persistence.*;
 
 import lombok.*;
 
+import java.time.LocalDateTime;
+
 @Entity(name = "posts") // JPA가 관리할 수 있는 Entity 클래스 지정
 @Getter
 @Setter
@@ -11,7 +13,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(of="post_id")
-public class PostEntity extends TimeStamped{
+public class PostEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,12 +24,18 @@ public class PostEntity extends TimeStamped{
     private String content;
     @Column(name="username", length = 20, nullable = false)
     private String username;
+    @Column(name="created_at", nullable = false)
+    private LocalDateTime created_at;
+
+    @ManyToOne
+    @JoinColumn(name="user_id")
+    private UserEntity user;
 
 
-
-    public PostEntity(String title, String content, String username) {
+    public PostEntity(String title, String content, String username, UserEntity user) {
         this.title = title;
         this.content = content;
         this.username = username;
+        this.user = user;
     }
 }

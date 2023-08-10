@@ -1,9 +1,9 @@
 spring:
   datasource:
-    username: ${DB_USERNAME}
-    password: ${DB_PASSWORD}
+    username: root
+    password: 10091011
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: ${DB_URL}
+    url: jdbc:mysql://localhost:3306/supercodingw7?useUnicode=true&characterEncoding=UTF-8
 logging:
   config: classpath:logback-spring.xml
 
@@ -13,4 +13,4 @@ logging:
         SQL: DEBUG
 
 jwt:
-  secret-key-source: ${SECRET_KEY_SOURCE}
+  secret-key-source: supercodingw7

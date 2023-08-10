@@ -100,4 +100,7 @@ public class UserService {
     private String encode(String password) {
         return passwordEncoder.encode(password);
     }
+
+    public void findByEmail() {
+    }
 }

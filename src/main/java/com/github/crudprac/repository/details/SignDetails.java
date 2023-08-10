@@ -26,7 +26,8 @@ public class SignDetails implements UserDetails {
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority(user.getAuthority().name()));
     }
-
+    //SecurityContextHolder 안의 SecurityContext 안의 Authentication은 Principal, Credentials, Authorities로 구성.
+    //Principal에 UserDetails가 들어간다.
     @Override
     public String getPassword() {
         return password;
