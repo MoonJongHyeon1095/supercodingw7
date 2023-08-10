@@ -16,8 +16,14 @@ public class SignDetailsService implements UserDetailsService {
 
     private final SignJpaRepository signJpaRepository;
 
+    /**
+     * 메서드의 이름은 Username이 들어있지만 실제 email을 이용해 SignDetails 객체를 가져옵니다.
+     *
+     * @param email 유저의 email
+     * @return SignDetails 객체
+     */
     @Override
-    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+    public SignDetails loadUserByUsername(String email) {
         SignEntity sign = signJpaRepository.findByEmail(email).orElseThrow(()->new NotFoundException("존재하지 않는 email입니다."));
 
         return SignDetails.builder()

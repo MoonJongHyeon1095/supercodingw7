@@ -26,12 +26,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         // 헤더에서 JWT 토큰을 꺼내옵니다.
         String jwt = jwtProvider.resolveToken(request);
 
-        // JWT 토큰이 유효한지 검사합니다.
-        if (jwt != null && jwtProvider.validateToken(jwt)) {
-            Authentication auth = jwtProvider.getAuthentication(jwt);
+        // JWT 토큰이 유효하다면
+        if (jwtProvider.validateToken(jwt)) {
+            // Authentication 객체를 생성하여 Security Context에 저장
+            Authentication auth = jwtProvider.createAuthentication(jwt);
             SecurityContextHolder.getContext().setAuthentication(auth);
         }
 
+        // 다음 필터 실행
         filterChain.doFilter(request, response);
     }
 }
