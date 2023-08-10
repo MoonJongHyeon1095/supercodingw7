@@ -20,6 +20,8 @@ public class CommentsEntity extends Time {
     @Column(name = "comment_id", nullable = false)
     private Integer id;
 
+
+
     @Column(name = "like_count", nullable = false)
     private Integer likeCount;
 
