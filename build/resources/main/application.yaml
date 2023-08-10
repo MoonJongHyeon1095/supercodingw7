@@ -1,4 +1,3 @@
-# MYSQL DATABASE SETTING
 spring:
   datasource:
     username: ${DB_USERNAME}
