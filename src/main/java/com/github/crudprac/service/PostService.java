@@ -12,7 +12,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.NotAcceptableStatusException;
 
 import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -55,8 +54,11 @@ public class PostService {
         return postList;
     }
 
-    public List<PostResponseDto> findByUserId(int id) {
-        return null;
+    public List<PostResponseDto> findByUserId(int user_id) {
+        List<PostEntity> posts = postRepository.findByUserId(user_id);
+        return posts.stream()
+                .map(PostResponseDto::new) // PostEntity를 PostResponseDto로 변환
+                .collect(Collectors.toList());
     }
 
 //    public List<PostResponseDto> findByEmail(String author_email) {

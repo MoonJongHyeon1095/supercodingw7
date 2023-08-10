@@ -39,4 +39,10 @@ public class PostEntity {
         this.username = username;
         this.user = user;
     }
+
+    public PostEntity(String title, String content, String username) {
+        this.title = title;
+        this.content = content;
+        this.username = username;
+    }
 }
