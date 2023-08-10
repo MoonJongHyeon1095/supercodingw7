@@ -1,7 +1,7 @@
 package com.github.crudprac.exceptions;
 
-public class NotFoundException extends RuntimeException{
-    public NotFoundException(String message) {
+public class JwtIsNotValidException extends RuntimeException {
+    public JwtIsNotValidException(String message) {
         super(message);
     }
 

@@ -9,4 +9,9 @@ public class ConflictException extends RuntimeException {
     public String getMessage() {
         return super.getMessage();
     }
+
+    @Override
+    public String toString() {
+        return super.toString();
+    }
 }

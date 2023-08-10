@@ -23,8 +23,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+        // 헤더에서 JWT 토큰을 꺼내옵니다.
         String jwt = jwtProvider.resolveToken(request);
 
+        // JWT 토큰이 유효한지 검사합니다.
         if (jwt != null && jwtProvider.validateToken(jwt)) {
             Authentication auth = jwtProvider.getAuthentication(jwt);
             SecurityContextHolder.getContext().setAuthentication(auth);
