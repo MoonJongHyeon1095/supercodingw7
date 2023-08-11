@@ -8,6 +8,7 @@ import com.github.crudprac.repository.UserJpaRepository;
 import com.github.crudprac.repository.entity.CommentsEntity;
 import com.github.crudprac.repository.CommentsRepository;
 import com.github.crudprac.repository.entity.PostEntity;
+import com.github.crudprac.repository.entity.UserEntity;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -16,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -47,17 +49,18 @@ public class CommentService {
 //        return commentsRepository.saveComments(commentsEntity);
 //    }
 
-    public CommentsEntity createComments(CommentsRequestDto commentsRequestDto) {
+    public CommentsEntity createComments(CommentsRequestDto commentsRequestDto, String email) {
 //            commentsRequestDto.getPostId();
+        UserEntity user = userJpaRepository.findByEmail(email).orElseThrow(() -> new NotFoundException("존재하지 않는 email입니다."));
 
-        PostEntity post = postRepository.findById(commentsRequestDto.getPostId()).orElseThrow(()->new NotFoundException("존재하지 않는 id입니다."));
+        PostEntity post = postRepository.findById(commentsRequestDto.getPost_id()).orElseThrow(()->new NotFoundException("존재하지 않는 id입니다."));
         CommentsEntity commentsEntity = CommentsEntity.builder()
                 .content(commentsRequestDto.getContent())
                 .likeCount(0)
                 .post(post)
-                .userName(commentsRequestDto.getUserName())
+                .userName(commentsRequestDto.getAuthor())
                 .created_at(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy.MM.dd HH:mm")))
-                .user(post.getUser())
+                .user(user)
                 .build();
         return commentsRepository.save(commentsEntity);
     }

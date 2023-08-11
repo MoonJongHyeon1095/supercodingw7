@@ -4,6 +4,8 @@ import com.github.crudprac.dto.comment.CommentsRequestDto;
 import com.github.crudprac.dto.comment.CommentsResponseDto;
 import com.github.crudprac.service.CommentService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,7 +22,10 @@ public class CommentController {
     /* CREATE */
     @PostMapping("/comments")
     public String createComments(@RequestBody CommentsRequestDto commentsRequestDto) {
-        commentService.createComments(commentsRequestDto);
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication.getName();
+
+        commentService.createComments(commentsRequestDto, email);
         return "댓글이 성공적으로 작성되었습니다.";
     }
 
