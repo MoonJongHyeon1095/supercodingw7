@@ -31,7 +31,4 @@ public class UserEntity {
 
     @OneToMany
     private List<AuthorityEntity> authorities;
-
-    @OneToMany(mappedBy = "user")
-    private final List<PostEntity> posts = new ArrayList<>();
 }
