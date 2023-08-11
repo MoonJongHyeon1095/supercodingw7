@@ -20,7 +20,7 @@ public class CommentsEntity extends Time {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "comment_id", nullable = false)
+    @Column(name = "comment_id")
     private Integer id;
 
     @Column(name = "author", nullable = false)
