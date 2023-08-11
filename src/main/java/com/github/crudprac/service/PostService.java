@@ -5,6 +5,7 @@ import com.github.crudprac.dto.PostRequestDto;
 import com.github.crudprac.dto.PostResponseDto;
 import com.github.crudprac.exceptions.DatabaseException;
 import com.github.crudprac.exceptions.NotFoundException;
+import com.github.crudprac.exceptions.UnathorizedException;
 import com.github.crudprac.repository.UserJpaRepository;
 import com.github.crudprac.repository.entity.PostEntity;
 import com.github.crudprac.repository.PostRepository;
@@ -69,7 +70,7 @@ public class PostService {
 
         PostEntity post = postRepository.findById(post_id).orElseThrow(()->new NotFoundException("그런 게시글 없습니다."));
 
-        if(!Objects.equals(email, post.getUsername())) throw new DatabaseException("너가 작성한 게시글이 아닙니다.");
+        if(!Objects.equals(email, post.getUsername())) throw new UnathorizedException("너가 작성한 게시글이 아닙니다.");
 
         // 영속성 컨텍스트의 변경감지를 통해 update를 진행
         post.update(post_id, postRequestDto);

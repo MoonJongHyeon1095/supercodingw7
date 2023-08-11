@@ -46,4 +46,11 @@ public class ExceptionControllerAdvice {
         log.warn(databaseException.toString());
         return new MessageResponse(databaseException.getMessage());
     }
+
+    @ExceptionHandler(UnathorizedException.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    public MessageResponse handleDatabaseException(UnathorizedException unathorizedException) {
+        log.warn(unathorizedException.toString());
+        return new MessageResponse(unathorizedException.getMessage());
+    }
 }
