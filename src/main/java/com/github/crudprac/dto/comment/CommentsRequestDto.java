@@ -1,7 +1,5 @@
 package com.github.crudprac.dto.comment;
 
-import com.github.crudprac.repository.entity.CommentsEntity;
-import com.github.crudprac.repository.entity.PostEntity;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -12,9 +10,7 @@ import lombok.Setter;
 public class CommentsRequestDto {
 
     private String content;
-    private String userName;
-    private Integer postId;
-
-
+    private String author;
+    private Integer post_id;
 
 }

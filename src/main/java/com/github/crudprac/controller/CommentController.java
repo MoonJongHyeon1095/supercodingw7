@@ -4,7 +4,6 @@ import com.github.crudprac.dto.comment.CommentsRequestDto;
 import com.github.crudprac.dto.comment.CommentsResponseDto;
 import com.github.crudprac.service.CommentService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -23,12 +22,10 @@ public class CommentController {
         commentService.createComments(commentsRequestDto);
         return "댓글이 성공적으로 작성되었습니다.";
     }
-
     /* READ */
-
     @GetMapping("/comments")
     public List<CommentsResponseDto> findComments() {
-        return commentService.findComments();
+        return commentService.findAll();
     }
 
     /* UPDATE */
@@ -42,7 +39,7 @@ public class CommentController {
     @DeleteMapping("/comments/{id}")
     public String deleteCommentsByPathId(@PathVariable String id) {
         commentService.deleteComments(id);
-        return "Object with id =" + id + "has been deleted";
+        return id + "의 댓글이 삭제되었습니다.";
     }
 
 }
