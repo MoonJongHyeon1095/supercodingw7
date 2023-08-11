@@ -1,6 +1,5 @@
 package com.github.crudprac.repository.details;
 
-import com.github.crudprac.repository.entity.UserEntity;
 import lombok.*;
 import org.springframework.context.annotation.Primary;
 import org.springframework.security.core.GrantedAuthority;
