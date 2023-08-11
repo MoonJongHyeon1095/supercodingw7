@@ -1,7 +1,9 @@
 package com.github.crudprac.service;
 
+import com.github.crudprac.dto.MessageResponse;
 import com.github.crudprac.dto.PostRequestDto;
 import com.github.crudprac.dto.PostResponseDto;
+import com.github.crudprac.exceptions.DatabaseException;
 import com.github.crudprac.exceptions.NotFoundException;
 import com.github.crudprac.repository.UserJpaRepository;
 import com.github.crudprac.repository.entity.PostEntity;
@@ -9,10 +11,13 @@ import com.github.crudprac.repository.PostRepository;
 import com.github.crudprac.repository.entity.UserEntity;
 import com.github.crudprac.util.JpaManager;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -26,7 +31,8 @@ public class PostService {
         this.userJpaRepository = userJpaRepository;
     }
 
-    public PostResponseDto createPost(PostRequestDto postRequestDto, String email){
+    @Transactional(transactionManager = "tmJpa")
+    public ResponseEntity<MessageResponse> createPost(PostRequestDto postRequestDto, String email){
         String title = postRequestDto.getTitle();
         String content = postRequestDto.getContent();
         String username = email;
@@ -42,13 +48,8 @@ public class PostService {
                 .build();
 
         PostEntity savedPost = JpaManager.managedSave(postRepository, postEntity);
-        return new PostResponseDto(savedPost);
-//        try{
-//            postRepository.save(postEntity);
-//            return new PostResponseDto(postEntity);
-//        } catch (RuntimeException exception){
-//            throw new NotAcceptableStatusException("save 에러");
-//        }
+        return ResponseEntity.ok(new MessageResponse("게시물이 성공적으로 작성되었습니다."));
+
     }
 
     public List<PostResponseDto> findAll() {
@@ -63,17 +64,17 @@ public class PostService {
                 .collect(Collectors.toList());
     }
 
-//    public List<PostResponseDto> findByEmail(String author_email) {
-//        String username = "test";
-//        postRepository.findByEmail(author_email)
-//
-//        List<PostResponseDto> postList = postRepository.findByUsername(username).stream().map(PostResponseDto::new).collect(Collectors.toList());
-//        return postList;
-//    }
+    @Transactional(transactionManager = "tmJpa")
+    public PostResponseDto updatePost(String email, Integer post_id, PostRequestDto postRequestDto) {
 
+        PostEntity post = postRepository.findById(post_id).orElseThrow(()->new NotFoundException("그런 게시글 없습니다."));
 
-//    public List<PostResponseDto> findByUserId(int user_id) {
-//        List<PostResponseDto> postList = postRepository.findByUserId(user_id).stream().map(PostResponseDto::new).collect(Collectors.toList());
-//        return postList;
-//    }
+        if(!Objects.equals(email, post.getUsername())) throw new DatabaseException("너가 작성한 게시글이 아닙니다.");
+
+        // 영속성 컨텍스트의 변경감지를 통해 update를 진행
+        post.update(post_id, postRequestDto);
+        PostEntity updatedPost = postRepository.save(post);
+        return new PostResponseDto(updatedPost);
+
+    }
 }

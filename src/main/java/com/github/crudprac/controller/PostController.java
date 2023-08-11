@@ -1,5 +1,6 @@
 package com.github.crudprac.controller;
 
+import com.github.crudprac.dto.MessageResponse;
 import com.github.crudprac.dto.PostRequestDto;
 import com.github.crudprac.dto.PostResponseDto;
 import com.github.crudprac.exceptions.NotFoundException;
@@ -7,6 +8,7 @@ import com.github.crudprac.repository.UserJpaRepository;
 import com.github.crudprac.repository.entity.UserEntity;
 import com.github.crudprac.service.PostService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
@@ -20,7 +22,7 @@ public class PostController {
     private final UserJpaRepository userJpaRepository;
 
     @PostMapping("/posts")
-    public PostResponseDto createPost(@RequestBody PostRequestDto postRequestDto){
+    public ResponseEntity<MessageResponse> createPost(@RequestBody PostRequestDto postRequestDto){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String email = authentication.getName();
 
@@ -41,4 +43,13 @@ public class PostController {
 
         return postService.findByUserId(user.getId());
     }
+
+    @PutMapping("/posts/{post_id}")
+    public PostResponseDto updatePost(@PathVariable("post_id") Integer post_id, @RequestBody PostRequestDto postRequestDto){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication.getName();
+
+        return postService.updatePost(email, post_id, postRequestDto);
+    }
+
 }

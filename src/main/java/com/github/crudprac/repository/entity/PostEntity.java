@@ -2,6 +2,7 @@ package com.github.crudprac.repository.entity;
 
 import javax.persistence.*;
 
+import com.github.crudprac.dto.PostRequestDto;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -44,5 +45,12 @@ public class PostEntity {
         this.title = title;
         this.content = content;
         this.username = username;
+    }
+
+    public void update(Integer post_id, PostRequestDto postRequestDto) {
+        this.post_id = post_id;
+        this.title = postRequestDto.getTitle();
+        this.content = postRequestDto.getContent();
+
     }
 }
