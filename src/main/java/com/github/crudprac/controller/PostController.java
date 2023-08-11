@@ -52,4 +52,13 @@ public class PostController {
         return postService.updatePost(email, post_id, postRequestDto);
     }
 
+    @DeleteMapping("/posts/{post_id}")
+    public ResponseEntity<MessageResponse> deletePost(@PathVariable("post_id") Integer post_id){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication.getName();
+        System.out.println(email);
+        return postService.deletePost(email, post_id);
+    }
+
+
 }

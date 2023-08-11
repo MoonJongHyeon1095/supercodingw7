@@ -78,4 +78,14 @@ public class PostService {
         return new PostResponseDto(updatedPost);
 
     }
+
+    public ResponseEntity<MessageResponse> deletePost(String email, Integer post_id) {
+        PostEntity post = postRepository.findById(post_id).orElseThrow(()->new NotFoundException("그런 게시글 없습니다."));
+
+        if(!Objects.equals(email, post.getUsername())) throw new UnathorizedException("너가 작성한 게시글이 아닙니다.");
+
+        postRepository.deleteById(post_id);
+        return ResponseEntity.ok(new MessageResponse("게시물이 삭제되었습니다."));
+
+    }
 }
